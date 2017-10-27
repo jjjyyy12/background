@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="auth.background.dao.RoleMenuMapper" >
+  <resultMap id="BaseResultMap" type="auth.background.bean.RoleMenu" >
+    <id column="RoleId" property="roleid" jdbcType="VARCHAR" />
+    <id column="MenuId" property="menuid" jdbcType="VARCHAR" />
+    <result column="MenuId1" property="menuid1" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    RoleId, MenuId, MenuId1
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="auth.background.bean.RoleMenuKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from RoleMenus
+    where RoleId = #{roleid,jdbcType=VARCHAR}
+      and MenuId = #{menuid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="auth.background.bean.RoleMenuKey" >
+    delete from RoleMenus
+    where RoleId = #{roleid,jdbcType=VARCHAR}
+      and MenuId = #{menuid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="auth.background.bean.RoleMenu" >
+    insert into RoleMenus (RoleId, MenuId, MenuId1
+      )
+    values (#{roleid,jdbcType=VARCHAR}, #{menuid,jdbcType=VARCHAR}, #{menuid1,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="auth.background.bean.RoleMenu" >
+    insert into RoleMenus
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roleid != null" >
+        RoleId,
+      </if>
+      <if test="menuid != null" >
+        MenuId,
+      </if>
+      <if test="menuid1 != null" >
+        MenuId1,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roleid != null" >
+        #{roleid,jdbcType=VARCHAR},
+      </if>
+      <if test="menuid != null" >
+        #{menuid,jdbcType=VARCHAR},
+      </if>
+      <if test="menuid1 != null" >
+        #{menuid1,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="auth.background.bean.RoleMenu" >
+    update RoleMenus
+    <set >
+      <if test="menuid1 != null" >
+        MenuId1 = #{menuid1,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where RoleId = #{roleid,jdbcType=VARCHAR}
+      and MenuId = #{menuid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="auth.background.bean.RoleMenu" >
+    update RoleMenus
+    set MenuId1 = #{menuid1,jdbcType=VARCHAR}
+    where RoleId = #{roleid,jdbcType=VARCHAR}
+      and MenuId = #{menuid,jdbcType=VARCHAR}
+  </update>
+</mapper>

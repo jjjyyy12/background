@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="auth.background.dao.UserMapper" >
+  <cache eviction="LRU" flushInterval="1000" size="1024" readOnly="true"/>
+  <resultMap id="BaseResultMap" type="auth.background.bean.User" >
+    <id column="Id" property="id" jdbcType="VARCHAR" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="CreateUserId" property="createuserid" jdbcType="VARCHAR" />
+    <result column="DepartmentId" property="departmentid" jdbcType="VARCHAR" />
+    <result column="EMail" property="email" jdbcType="VARCHAR" />
+    <result column="IsDeleted" property="isdeleted" jdbcType="INTEGER" />
+    <result column="LastLoginTime" property="lastlogintime" jdbcType="TIMESTAMP" />
+    <result column="LoginTimes" property="logintimes" jdbcType="INTEGER" />
+    <result column="MobileNumber" property="mobilenumber" jdbcType="VARCHAR" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="Password" property="password" jdbcType="VARCHAR" />
+    <result column="Remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="CreateUserName" property="createusername" jdbcType="VARCHAR" />
+    <association property="createuser" column="createuserid" select="auth.background.dao.UserMapper.selectByPrimaryKey" fetchType="eager"/>
+    <association property="department" column="departmentid" select="auth.background.dao.DepartmentMapper.selectByPrimaryKey" fetchType="eager"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    Id, CreateTime, CreateUserId, DepartmentId, EMail, IsDeleted, LastLoginTime, LoginTimes, 
+    MobileNumber, Name, Password, Remarks, UserName
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from Users
+    where Id = #{id,jdbcType=VARCHAR}
+  </select>
+    <select id="CheckUser" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from Users
+    where username = #{username,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR}
+  </select>
+   <select id="GetAllList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Users
+  </select>
+  <select id="GetChildrenByDepartment" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Users 
+    where DepartmentId = #{departmentId,jdbcType=VARCHAR}
+  </select>
+    <select id="GetChildrenByDepartmentCount" resultType="Integer">
+    select 
+    count(1)
+    from Users 
+    where DepartmentId = #{departmentId,jdbcType=VARCHAR}
+  </select>
+  <select id="GetListByIds" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Users 
+    where Id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from Users
+    where Id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatchByPrimaryKey" >
+        delete from Users where id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+ </delete>
+
+  <insert id="insert" parameterType="auth.background.bean.User" >
+    insert into Users (Id, CreateTime, CreateUserId, 
+      DepartmentId, EMail, IsDeleted, 
+      LastLoginTime, LoginTimes, MobileNumber, 
+      Name, Password, Remarks, 
+      UserName)
+    values (#{id,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{createuserid,jdbcType=VARCHAR}, 
+      #{departmentid,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{isdeleted,jdbcType=INTEGER}, 
+      #{lastlogintime,jdbcType=TIMESTAMP}, #{logintimes,jdbcType=INTEGER}, #{mobilenumber,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, 
+      #{username,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="auth.background.bean.User" >
+    insert into Users
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        Id,
+      </if>
+      <if test="createtime != null" >
+        CreateTime,
+      </if>
+      <if test="createuserid != null" >
+        CreateUserId,
+      </if>
+      <if test="departmentid != null" >
+        DepartmentId,
+      </if>
+      <if test="email != null" >
+        EMail,
+      </if>
+      <if test="isdeleted != null" >
+        IsDeleted,
+      </if>
+      <if test="lastlogintime != null" >
+        LastLoginTime,
+      </if>
+      <if test="logintimes != null" >
+        LoginTimes,
+      </if>
+      <if test="mobilenumber != null" >
+        MobileNumber,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="password != null" >
+        Password,
+      </if>
+      <if test="remarks != null" >
+        Remarks,
+      </if>
+      <if test="username != null" >
+        UserName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuserid != null" >
+        #{createuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentid != null" >
+        #{departmentid,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="isdeleted != null" >
+        #{isdeleted,jdbcType=INTEGER},
+      </if>
+      <if test="lastlogintime != null" >
+        #{lastlogintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="logintimes != null" >
+        #{logintimes,jdbcType=INTEGER},
+      </if>
+      <if test="mobilenumber != null" >
+        #{mobilenumber,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="auth.background.bean.User" >
+    update Users
+    <set >
+      <if test="createtime != null" >
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuserid != null" >
+        CreateUserId = #{createuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentid != null" >
+        DepartmentId = #{departmentid,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        EMail = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="isdeleted != null" >
+        IsDeleted = #{isdeleted,jdbcType=INTEGER},
+      </if>
+      <if test="lastlogintime != null" >
+        LastLoginTime = #{lastlogintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="logintimes != null" >
+        LoginTimes = #{logintimes,jdbcType=INTEGER},
+      </if>
+      <if test="mobilenumber != null" >
+        MobileNumber = #{mobilenumber,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        Name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        Password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        Remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        UserName = #{username,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="auth.background.bean.User" >
+    update Users
+    set CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      CreateUserId = #{createuserid,jdbcType=VARCHAR},
+      DepartmentId = #{departmentid,jdbcType=VARCHAR},
+      EMail = #{email,jdbcType=VARCHAR},
+      IsDeleted = #{isdeleted,jdbcType=INTEGER},
+      LastLoginTime = #{lastlogintime,jdbcType=TIMESTAMP},
+      LoginTimes = #{logintimes,jdbcType=INTEGER},
+      MobileNumber = #{mobilenumber,jdbcType=VARCHAR},
+      Name = #{name,jdbcType=VARCHAR},
+      Password = #{password,jdbcType=VARCHAR},
+      Remarks = #{remarks,jdbcType=VARCHAR},
+      UserName = #{username,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
