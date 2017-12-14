@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
+import auth.background.dto.MessageBase;
 import auth.background.dto.UserDto;
-import auth.background.service.MessageBase;
 import auth.background.service.UserAppService;
 
 @Component

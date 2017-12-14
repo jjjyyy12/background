@@ -7,6 +7,8 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
+
+import auth.background.dto.MessageBase;
 //http://blog.csdn.net/oMaverick1/article/details/51331004
 @Service
 public class QueueSerivce<T> {

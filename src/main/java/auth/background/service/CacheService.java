@@ -16,6 +16,7 @@ import redis.clients.jedis.Tuple;
 import com.alibaba.fastjson.JSON;
 
 import auth.background.config.MyRedisTemplate;
+import auth.background.util.BeanMapper;
 
 @Service
 public class CacheService<T> {

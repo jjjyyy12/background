@@ -5,18 +5,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-
 import javax.annotation.Resource;
-
-import org.dozer.Mapper;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +18,12 @@ import auth.background.bean.UserRoleKey;
 import auth.background.config.MyConstants;
 import auth.background.dao.UserMapper;
 import auth.background.dao.UserRoleMapper;
+import auth.background.dto.MessageBase;
 import auth.background.dto.ResetPasswordModel;
 import auth.background.dto.UserDto;
 import auth.background.dto.UserRoleDto;
+import auth.background.util.BeanMapper;
+import auth.background.util.PageHelper;
  
 
 @Service

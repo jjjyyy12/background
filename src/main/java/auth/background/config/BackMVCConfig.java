@@ -39,8 +39,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import redis.clients.jedis.JedisPoolConfig;
-//import auth.background.config.DBConfig;
-import auth.background.service.BeanMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +48,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.rabbitmq.client.Channel;  
+import com.rabbitmq.client.Channel;
+
+import auth.background.util.BeanMapper;  
 /**
  *  
  */
