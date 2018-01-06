@@ -12,8 +12,8 @@ import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.Tuple;
 
 @Component
-public class MyRedisTemplate {
-    private static final Logger LOGGER    = LoggerFactory.getLogger(MyRedisTemplate.class);
+public class RedisTemplate {
+    private static final Logger LOGGER    = LoggerFactory.getLogger(RedisTemplate.class);
 
     @Autowired
     private JedisCluster        jedisCluster;

@@ -27,13 +27,13 @@ public class BeanMapper {
 	    return dozer.map(source, destinationClass);  
 	  }
 
-	  public <T> List<T> mapList(Collection sourceList, Class<T> destinationClass){  
+	  public <T> List<T> mapList(Collection<?> sourceList, Class<T> destinationClass){  
 	    List destinationList = new ArrayList();  
 	    for (Iterator i$ = sourceList.iterator(); i$.hasNext(); ) { Object sourceObject = i$.next();  
 	      Object destinationObject = dozer.map(sourceObject, destinationClass);  
 	      destinationList.add(destinationObject);  
 	    }
-	    return destinationList;  
+	    return destinationList;
 	  }
 	  
 	    

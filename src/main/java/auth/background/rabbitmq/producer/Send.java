@@ -6,13 +6,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;  
 import org.springframework.beans.factory.annotation.Autowired;  
 import org.springframework.stereotype.Component;  
-
-import auth.background.config.BackMVCConfig;
   
 /**  
  * 消息生产者  
  *   
- 
  */  
 //@Component  
 //public class Send implements RabbitTemplate.ConfirmCallback {  

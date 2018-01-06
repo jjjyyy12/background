@@ -1,7 +1,5 @@
 package auth.background.service;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,14 +12,13 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Tuple;
 
 import com.alibaba.fastjson.JSON;
-
-import auth.background.config.MyRedisTemplate;
+import auth.background.config.RedisTemplate;
 import auth.background.util.BeanMapper;
 
 @Service
 public class CacheService<T> {
     @Autowired
-    private MyRedisTemplate myRedisTemplate;
+    private RedisTemplate myRedisTemplate;
     @Autowired
     private BeanMapper dzmapper;
   

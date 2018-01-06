@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSON;
 
 import auth.background.bean.User;
 import auth.background.bean.UserRoleKey;
-import auth.background.config.MyConstants;
+import auth.background.config.RedisConstants;
 import auth.background.dao.UserMapper;
 import auth.background.dao.UserRoleMapper;
 import auth.background.dto.MessageBase;
@@ -52,15 +52,14 @@ public class UserAppService {
     	return dzmapper.map(userDao.CheckUser(userName,password), UserDto.class);
     }
     
-    public UserDto Get(String id)
-    {
+    public UserDto Get(String id){
     	User obj = userDao.selectByPrimaryKey(id);
     	UserDto dto = dzmapper.map(obj, UserDto.class);
     	return dto;
     }
     
     public List<UserDto> GetAllList(){
-    	String okey=MyConstants._instance+Key;
+    	String okey=RedisConstants._instance+Key;
     	Runnable<UserDto> handler = () -> 
     	{ 
     		return dzmapper.mapList(userDao.GetAllList(),  UserDto.class); 
@@ -69,7 +68,7 @@ public class UserAppService {
     }
     
     public int GetChildrenByDepartmentCount(String departmentid){
-    	String okey=MyConstants._instance+Key+departmentid;
+    	String okey=RedisConstants._instance+Key+departmentid;
     	RunnableCount handler = () -> 
     	{ 
     		return userDao.GetChildrenByDepartmentCount(departmentid); 
@@ -79,7 +78,7 @@ public class UserAppService {
     
   //https://www.oschina.net/news/62668/mybatis-pagehelper-3-7-3
     public List<UserDto> GetChildrenByDepartment(String departmentid, int startPage, int pageSize,int count){
-    	String okey=MyConstants._instance+Key+departmentid;
+    	String okey=RedisConstants._instance+Key+departmentid;
     	Runnable<UserDto> handler = () -> 
     	{ 
     		List<User> llist = userDao.GetChildrenByDepartment(departmentid);
@@ -91,7 +90,7 @@ public class UserAppService {
     }
     
     public List<UserRoleDto> GetUserRoles(String userId){
-    	String okey=MyConstants._instance+Key+userId;
+    	String okey=RedisConstants._instance+Key+userId;
     	Runnable<UserRoleDto> handler = () -> { return dzmapper.mapList(userRoleDao.GetUserRoles(userId), UserRoleDto.class); };
     	return cacheService2.GetSortList(handler, okey, 0, 0,-1);
     }
@@ -182,7 +181,7 @@ public class UserAppService {
         {
         	RunnableCompare<UserDto> handler = (t) -> { return userdto.getId().equals(t.getId()); };
             cacheService.GetClass(userdto);//T GetClass
-            cacheService.SortedSetUpdate(MyConstants._instance+Key+userdto.getDepartmentId(), userdto, handler, false);
+            cacheService.SortedSetUpdate(RedisConstants._instance + Key + userdto.getDepartmentId(), userdto, handler, false);
         }
     }
     
@@ -208,7 +207,7 @@ public class UserAppService {
             {
             	handler = (t) -> { return userdto.getId().equals(t.getId()); };
             	cacheService.GetClass(userdto);//T GetClass
-                cacheService.SortedSetUpdate(MyConstants._instance+Key+userdto.getDepartmentId(), userdto, handler, true);
+                cacheService.SortedSetUpdate(RedisConstants._instance+Key+userdto.getDepartmentId(), userdto, handler, true);
             }
         }
     }
@@ -224,15 +223,17 @@ public class UserAppService {
     	delobj.setMessageBodyByte(JSON.toJSONBytes(ids));
     	queueSerivce.getAmqpTemplate().convertAndSend(QueueSerivce.exchangeName, delobj.getMessageRouter(), delobj);
     }
-    
+    //修改密码
     public String ResetPassword(ResetPasswordModel rpm){   	
     	if(!rpm.getNewPassword().equals(rpm.getNewPassword2())){
     		return "新密码和确认新密码不匹配";
     	}
-    	User obj = userDao.selectByPrimaryKey(rpm.getResetPasswordId());
-    	if(rpm.getOldPassword().equals( obj.getPassword()) ){
-    		obj.setPassword(rpm.getNewPassword());
-    		userDao.updateByPrimaryKeySelective(obj);
+    	String id = rpm.getResetPasswordId();
+    	UserDto cuser= Get(id);
+    	if(rpm.getOldPassword().equals( cuser.getPassword()) ){
+    		cuser.setPassword(rpm.getNewPassword());
+        	MessageBase user=null;
+        	updateMessage(cuser,user);
     		return "Success";
     	}else{
     		return "旧密码不正确";

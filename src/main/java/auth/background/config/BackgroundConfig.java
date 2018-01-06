@@ -59,13 +59,12 @@ import auth.background.util.BeanMapper;
 @EnableRabbit
 @EnableRedisHttpSession 
 @PropertySource(value = "db.properties", encoding = "UTF-8")
-public class BackMVCConfig implements ResourceLoaderAware, EnvironmentAware{
+public class BackgroundConfig implements ResourceLoaderAware, EnvironmentAware{
 
 //		@Bean
 //	    public SqlSession getSqlSession(){
 //	    	return DBUtils.openSqlSession();
 //	    }
-
 	
 		@Bean
 		DozerBeanMapper mapper()
@@ -82,13 +81,13 @@ public class BackMVCConfig implements ResourceLoaderAware, EnvironmentAware{
 			return new BeanMapper();
 		}
 
-		
+
 		//------------------amqp config
 
 	    @Bean  
 	    public ConnectionFactory connectionFactory() {  
 	        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();  
-	        connectionFactory.setAddresses("172.16.32.167:5672,172.16.32.188:5672");  
+	        connectionFactory.setAddresses("192.168.1.115:5672,192.168.1.116:5672");  
 	        connectionFactory.setUsername("clare");  
 	        connectionFactory.setPassword("clare");  
 	        connectionFactory.setVirtualHost("/");  
@@ -152,7 +151,6 @@ public class BackMVCConfig implements ResourceLoaderAware, EnvironmentAware{
 	       @Bean
 	       public JedisConnectionFactory getJedisconnectionFactory() {
 	           JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(redisClusterConfiguration(),jedisPoolConfig());
-	           
 	           jedisConnectionFactory.setUsePool(true);
 	           jedisConnectionFactory.setTimeout(2000);
 //	           jedisConnectionFactory.afterPropertiesSet();  
@@ -161,16 +159,12 @@ public class BackMVCConfig implements ResourceLoaderAware, EnvironmentAware{
 	       
 	       /**
 	        * redis集群配置
-	        * 
 	        * 配置redis集群的结点及其它一些属性
-	        * 
 	        * @return
 	        */
 	       private RedisClusterConfiguration redisClusterConfiguration(){
 	           RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration();
-
 	           redisClusterConfig.setClusterNodes(getClusterNodes());
-	           
 	           redisClusterConfig.setMaxRedirects(3);
 	           return redisClusterConfig;
 	           
@@ -235,25 +229,19 @@ public class BackMVCConfig implements ResourceLoaderAware, EnvironmentAware{
 	       
 	       /**
 	        * redis集群节点IP和端口的添加
-	        * 
 	        * 节点：RedisNode redisNode = new RedisNode("127.0.0.1",6379);
-	        * 
 	        * @return
 	        */
 	       private Set<RedisNode> getClusterNodes(){
 	           // 添加redis集群的节点
 	           Set<RedisNode> clusterNodes = new HashSet<RedisNode>();
 	           // 这三个主节点是我本机的IP和端口,从节点没有加入 ，这里不是我真实的IP，虽然是内网，还是不要太直接了
-
 	           clusterNodes.add(new RedisNode("172.16.32.139", 7000));
 	           clusterNodes.add(new RedisNode("172.16.32.139", 7001));
 	           clusterNodes.add(new RedisNode("172.16.32.139", 7002));
 	           return clusterNodes;
 	       }
 	      
-	       
-	       
-	       
 //		@Autowired
 //	    DBConfig dbConfig;
  
