@@ -33,7 +33,7 @@ public class RedisTemplate {
         jedisCluster.set(prefix + KEY_SPLIT + key, value);
         LOGGER.debug("RedisUtil:set cache key={},value={}", prefix + KEY_SPLIT + key, value);
     }
-
+   
     /**
      * 设置缓存，并且自己指定过期时间
      * @param prefix
@@ -71,6 +71,16 @@ public class RedisTemplate {
         return value;
     }
 
+    /**
+     * 获取指定key的缓存
+     * @param key
+     */
+    public String get( String key) {
+        String value = jedisCluster.get(key);
+        LOGGER.debug("RedisUtil:get cache key={},value={}",  key, value);
+        return value;
+    }
+    
     /**
      * 删除指定key的缓存
      * @param prefix

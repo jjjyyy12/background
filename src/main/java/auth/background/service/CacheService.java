@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import redis.clients.jedis.Tuple;
@@ -17,20 +18,20 @@ import auth.background.util.BeanMapper;
 
 @Service
 public class CacheService<T> {
-    @Autowired
+	@Resource
     private RedisTemplate myRedisTemplate;
-    @Autowired
+	@Resource
     private BeanMapper dzmapper;
   
     Class<T> clazz;
     @SuppressWarnings("unchecked")
 	void GetClass( T t) { 
     	this.clazz = (Class<T>) t.getClass(); 
-    	} 
+    } 
 
-    //包装chche的get方法，先取缓存再取db
+    //包装chche的getlist方法，先取缓存再取db
 	@SuppressWarnings("unchecked")
-	public List<T> GetSortList(Runnable<T> handler,String key, int startPage, int pageSize,int count){
+	public List<T> GetSortList(RunnableCacheList<T> handler,String key, int startPage, int pageSize,int count){
 		List<T> dlist;
 		int max= startPage*pageSize;
 		if(max>=count) max=count;
@@ -59,7 +60,16 @@ public class CacheService<T> {
     	}
 		return dlist;
 	}
- 
+	
+	//根据id得到缓存对象，没有去db取
+	public <M> T Get(RunnableCacheSignel<T,M> handler, String key,M id){
+		String value = myRedisTemplate.get( key);
+		if(value == null || value.length() <= 0) {
+			return handler.get(id);
+		}
+		return (T)JSON.parseObject(value, this.clazz);
+	}
+	
 	//更新缓存
 	@SuppressWarnings("unchecked")
 	public boolean SortedSetUpdate(String key,T inobj, RunnableCompare<T> handler,boolean delFlag){
@@ -82,9 +92,9 @@ public class CacheService<T> {
          }
         return true;
 	}
+	
 	//getcount包装
-	public int zcard(RunnableCount handler,String okey){
-		
+	public int zcard(RunnableCacheCount handler,String okey){
     	long cnt = myRedisTemplate.zcard(okey);
     	if(cnt==0)
     		return handler.getCount();

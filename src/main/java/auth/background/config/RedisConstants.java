@@ -5,5 +5,5 @@ package auth.background.config;
  */
 public class RedisConstants {
  
-    public static final String _instance="clare_java"; //redis instance
+    public static final String _instance="clare"; //redis instance
 }

@@ -22,6 +22,8 @@ import auth.background.dto.MessageBase;
 import auth.background.dto.ResetPasswordModel;
 import auth.background.dto.UserDto;
 import auth.background.dto.UserRoleDto;
+import auth.background.dto.user_delete_deleteuser_normal;
+import auth.background.dto.user_update_insertupdate_rpc;
 import auth.background.util.BeanMapper;
 import auth.background.util.PageHelper;
  
@@ -48,38 +50,45 @@ public class UserAppService {
 	@Resource
 	private QueueSerivce<UserDto> queueSerivce;
 	
+	
+	
     public UserDto CheckUser(String userName, String password){
     	return dzmapper.map(userDao.CheckUser(userName,password), UserDto.class);
     }
     
+    //查询user
     public UserDto Get(String id){
-    	User obj = userDao.selectByPrimaryKey(id);
-    	UserDto dto = dzmapper.map(obj, UserDto.class);
-    	return dto;
+    	if(id==null||id.length()<=0) return null;
+    	String key = RedisConstants._instance+Key+id;
+    	RunnableCacheSignel<UserDto,String> handler = (x) -> 
+    	{ 
+    		return dzmapper.map(userDao.selectByPrimaryKey(x), UserDto.class); 
+    	};
+    	return cacheService.Get(handler, key, id);
     }
-    
+    //得到所有
     public List<UserDto> GetAllList(){
     	String okey=RedisConstants._instance+Key;
-    	Runnable<UserDto> handler = () -> 
+    	RunnableCacheList<UserDto> handler = () -> 
     	{ 
     		return dzmapper.mapList(userDao.GetAllList(),  UserDto.class); 
     	};
     	return cacheService.GetSortList(handler, okey,0, 0,-1);
     }
-    
+    //取部门人数
     public int GetChildrenByDepartmentCount(String departmentid){
     	String okey=RedisConstants._instance+Key+departmentid;
-    	RunnableCount handler = () -> 
+    	RunnableCacheCount handler = () -> 
     	{ 
     		return userDao.GetChildrenByDepartmentCount(departmentid); 
     	};
     	return cacheService.zcard(handler, okey);
     }
-    
+    //得到部门人数，分页
   //https://www.oschina.net/news/62668/mybatis-pagehelper-3-7-3
     public List<UserDto> GetChildrenByDepartment(String departmentid, int startPage, int pageSize,int count){
     	String okey=RedisConstants._instance+Key+departmentid;
-    	Runnable<UserDto> handler = () -> 
+    	RunnableCacheList<UserDto> handler = () -> 
     	{ 
     		List<User> llist = userDao.GetChildrenByDepartment(departmentid);
     		return dzmapper.mapList(llist,  UserDto.class); 
@@ -91,7 +100,7 @@ public class UserAppService {
     
     public List<UserRoleDto> GetUserRoles(String userId){
     	String okey=RedisConstants._instance+Key+userId;
-    	Runnable<UserRoleDto> handler = () -> { return dzmapper.mapList(userRoleDao.GetUserRoles(userId), UserRoleDto.class); };
+    	RunnableCacheList<UserRoleDto> handler = () -> { return dzmapper.mapList(userRoleDao.GetUserRoles(userId), UserRoleDto.class); };
     	return cacheService2.GetSortList(handler, okey, 0, 0,-1);
     }
     
@@ -154,14 +163,10 @@ public class UserAppService {
     	updateMessage(cuser,user);
     	return true;
     }
+    //更新或新增发消息
     @SuppressWarnings("unchecked")
 	private void updateMessage(UserDto dto,MessageBase replyMsg){
-    	MessageBase delobj = new MessageBase();
-    	delobj.setFailedTimes(0);
-    	delobj.setMessageBodyReturnByte(null);
-    	delobj.setexchangeName(QueueSerivce.exchangeName);
-    	delobj.setMessageRouter("user_update_insertupdate_rpc");
-    	delobj.setMessageBodyByte(JSON.toJSONBytes(dto));
+    	user_update_insertupdate_rpc delobj = new user_update_insertupdate_rpc(QueueSerivce.exchangeName,dto);
 //		Object reply = (Message<MessageBase>) queueSerivce.getAmqpTemplate().convertSendAndReceive(QueueSerivce.exchangeName, delobj.getMessageRouter(), delobj);
 		RunnableQueueSucc<UserDto,MessageBase> succHandle
 		= (x,y) -> {
@@ -185,12 +190,6 @@ public class UserAppService {
         }
     }
     
-    public void Delete(String id){
-    	List<String> ids = new ArrayList<String>(1);
-    	if(!"".equals(ids))
-    		ids.add(id);
-    	DeleteBatch(ids);
-    }
     
     @Transactional
     public void DeleteBatchImpl(List<String> userIds){
@@ -211,16 +210,18 @@ public class UserAppService {
             }
         }
     }
+    //单个删除
+    public void Delete(String id){
+    	List<String> ids = new ArrayList<String>(1);
+    	if(!"".equals(ids))
+    		ids.add(id);
+    	DeleteBatch(ids);
+    }
     //批量删除,mq
     public void DeleteBatch(List<String> ids){
     	if(ids.isEmpty()) return;
     	DeleteCache(ids);
-    	MessageBase delobj = new MessageBase();
-    	delobj.setFailedTimes(0);
-    	delobj.setMessageBodyReturnByte(null);
-    	delobj.setexchangeName(QueueSerivce.exchangeName);
-    	delobj.setMessageRouter("user_delete_deleteuser_normal");
-    	delobj.setMessageBodyByte(JSON.toJSONBytes(ids));
+    	user_delete_deleteuser_normal delobj = new user_delete_deleteuser_normal(QueueSerivce.exchangeName, ids);
     	queueSerivce.getAmqpTemplate().convertAndSend(QueueSerivce.exchangeName, delobj.getMessageRouter(), delobj);
     }
     //修改密码
