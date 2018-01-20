@@ -101,5 +101,8 @@ public class CacheService<T> {
     	else 
     		return (int)cnt;
 	}
- 
+	
+	public void Remove(String key){
+		myRedisTemplate.delete(key);
+	}
 }

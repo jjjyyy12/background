@@ -6,4 +6,6 @@ package auth.background.config;
 public class RedisConstants {
  
     public static final String _instance="clare"; //redis instance
+    public static final String UserKey="User";
+    public static final String UserRoleKey="UserRole";
 }

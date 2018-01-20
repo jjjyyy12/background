@@ -15,6 +15,7 @@ import com.alibaba.fastjson.TypeReference;
 
 import auth.background.dto.MessageBase;
 import auth.background.dto.UserDto;
+import auth.background.dto.UserRoleMsg;
 import auth.background.service.UserAppService;
 
 @Component
@@ -45,7 +46,13 @@ public class UserAsyncQueueListener {
 	    return msg;
     }
  
-	
+	@RabbitListener(queues = "user_update_userroles_normal_fonour_consumerauth")
+    public void ProcessMsg_UserRole(MessageBase msg) {
+			byte[] msgbyte = msg.getMessageBodyByte();
+	    	TypeReference<UserRoleMsg> typeReference = new TypeReference<UserRoleMsg>() {};
+	    	UserRoleMsg realmsg = JSON.parseObject(msgbyte, 0, msgbyte.length,Charset.forName("Utf-8"), typeReference.getType());
+	    	_userAppService.BatchUpdateUserRolesImpl(realmsg.userIds,realmsg.roleIds);
+    }
 	
 //	 //参数中使用@Header获取mesage
 //    @RabbitListener(queues = { "user_update_insertupdate_rpc_reply" })

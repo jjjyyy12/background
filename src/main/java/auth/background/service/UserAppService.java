@@ -22,8 +22,10 @@ import auth.background.dto.MessageBase;
 import auth.background.dto.ResetPasswordModel;
 import auth.background.dto.UserDto;
 import auth.background.dto.UserRoleDto;
+import auth.background.dto.UserRoleMsg;
 import auth.background.dto.user_delete_deleteuser_normal;
 import auth.background.dto.user_update_insertupdate_rpc;
+import auth.background.dto.user_update_userroles_normal;
 import auth.background.util.BeanMapper;
 import auth.background.util.PageHelper;
  
@@ -31,7 +33,7 @@ import auth.background.util.PageHelper;
 @Service
 public class UserAppService {
 
-	private static final String Key="User";
+
     @Resource
     private UserMapper userDao;
     
@@ -59,7 +61,7 @@ public class UserAppService {
     //查询user
     public UserDto Get(String id){
     	if(id==null||id.length()<=0) return null;
-    	String key = RedisConstants._instance+Key+id;
+    	String key = RedisConstants._instance+RedisConstants.UserKey+id;
     	RunnableCacheSignel<UserDto,String> handler = (x) -> 
     	{ 
     		return dzmapper.map(userDao.selectByPrimaryKey(x), UserDto.class); 
@@ -68,7 +70,7 @@ public class UserAppService {
     }
     //得到所有
     public List<UserDto> GetAllList(){
-    	String okey=RedisConstants._instance+Key;
+    	String okey=RedisConstants._instance+RedisConstants.UserKey;
     	RunnableCacheList<UserDto> handler = () -> 
     	{ 
     		return dzmapper.mapList(userDao.GetAllList(),  UserDto.class); 
@@ -77,7 +79,7 @@ public class UserAppService {
     }
     //取部门人数
     public int GetChildrenByDepartmentCount(String departmentid){
-    	String okey=RedisConstants._instance+Key+departmentid;
+    	String okey=RedisConstants._instance+RedisConstants.UserKey+departmentid;
     	RunnableCacheCount handler = () -> 
     	{ 
     		return userDao.GetChildrenByDepartmentCount(departmentid); 
@@ -87,7 +89,7 @@ public class UserAppService {
     //得到部门人数，分页
   //https://www.oschina.net/news/62668/mybatis-pagehelper-3-7-3
     public List<UserDto> GetChildrenByDepartment(String departmentid, int startPage, int pageSize,int count){
-    	String okey=RedisConstants._instance+Key+departmentid;
+    	String okey=RedisConstants._instance+RedisConstants.UserKey+departmentid;
     	RunnableCacheList<UserDto> handler = () -> 
     	{ 
     		List<User> llist = userDao.GetChildrenByDepartment(departmentid);
@@ -99,13 +101,23 @@ public class UserAppService {
     }
     
     public List<UserRoleDto> GetUserRoles(String userId){
-    	String okey=RedisConstants._instance+Key+userId;
+    	String okey=RedisConstants._instance+RedisConstants.UserRoleKey+userId;
     	RunnableCacheList<UserRoleDto> handler = () -> { return dzmapper.mapList(userRoleDao.GetUserRoles(userId), UserRoleDto.class); };
     	return cacheService2.GetSortList(handler, okey, 0, 0,-1);
     }
     
     @Transactional 
     public void BatchUpdateUserRoles(List<String> userIds, List<String> roleIds){
+    	for(String uid : userIds){
+    		DeleteCache(uid);
+    	}
+    	UserRoleMsg userrolemsg = new UserRoleMsg();
+    	userrolemsg.roleIds=roleIds;
+    	userrolemsg.userIds = userIds;
+    	user_update_userroles_normal userroleobj = new user_update_userroles_normal(QueueSerivce.exchangeName,userrolemsg);
+    	queueSerivce.getAmqpTemplate().convertAndSend(QueueSerivce.exchangeName, userroleobj.getMessageRouter(), userroleobj);
+    }
+    public void BatchUpdateUserRolesImpl(List<String> userIds, List<String> roleIds){
     	List<UserRoleKey> list = new ArrayList<UserRoleKey>();
     	UserRoleKey e = null;
     	for(String uid : userIds){
@@ -186,7 +198,8 @@ public class UserAppService {
         {
         	RunnableCompare<UserDto> handler = (t) -> { return userdto.getId().equals(t.getId()); };
             cacheService.GetClass(userdto);//T GetClass
-            cacheService.SortedSetUpdate(RedisConstants._instance + Key + userdto.getDepartmentId(), userdto, handler, false);
+            cacheService.SortedSetUpdate(RedisConstants._instance + RedisConstants.UserKey + userdto.getDepartmentId(), userdto, handler, false);
+            DeleteCache(userdto.getId());
         }
     }
     
@@ -206,8 +219,19 @@ public class UserAppService {
             {
             	handler = (t) -> { return userdto.getId().equals(t.getId()); };
             	cacheService.GetClass(userdto);//T GetClass
-                cacheService.SortedSetUpdate(RedisConstants._instance+Key+userdto.getDepartmentId(), userdto, handler, true);
+                cacheService.SortedSetUpdate(RedisConstants._instance+RedisConstants.UserKey+userdto.getDepartmentId(), userdto, handler, true);
+                DeleteCache(userdto.getId());
             }
+        }
+    }
+    private void DeleteCache(String id)
+    {
+        List<String> keys = new ArrayList<String>(3);
+        keys.add(RedisConstants.UserRoleKey);
+        keys.add(RedisConstants.UserKey);
+        for(String rid : keys)
+        {
+        	cacheService.Remove(rid);//RemoveAllAsync 需要key落在同一个solt上
         }
     }
     //单个删除
