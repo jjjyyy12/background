@@ -14,7 +14,7 @@ public class Role {
     private String name;
 
     private String remarks;
-
+    private User createuser;
     public String getId() {
         return id;
     }
@@ -62,4 +62,12 @@ public class Role {
     public void setRemarks(String remarks) {
         this.remarks = remarks == null ? null : remarks.trim();
     }
+
+	public User getCreateuser() {
+		return createuser;
+	}
+
+	public void setCreateuser(User createuser) {
+		this.createuser = createuser;
+	}
 }

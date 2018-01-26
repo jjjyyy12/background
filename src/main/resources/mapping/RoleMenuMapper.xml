@@ -5,6 +5,8 @@
     <id column="RoleId" property="roleid" jdbcType="VARCHAR" />
     <id column="MenuId" property="menuid" jdbcType="VARCHAR" />
     <result column="MenuId1" property="menuid1" jdbcType="VARCHAR" />
+    <association property="menu" column="menuid" select="auth.background.dao.MenuMapper.selectByPrimaryKey" fetchType="eager"/>
+    <association property="role" column="roleid" select="auth.background.dao.RoleMapper.selectByPrimaryKey" fetchType="eager"/>
   </resultMap>
   <sql id="Base_Column_List" >
     RoleId, MenuId, MenuId1
@@ -16,17 +18,47 @@
     where RoleId = #{roleid,jdbcType=VARCHAR}
       and MenuId = #{menuid,jdbcType=VARCHAR}
   </select>
+   <select id="GetRoleMenus" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from RoleMenus 
+    where RoleId = #{roleid,jdbcType=VARCHAR}
+  </select>
+  <select id="GetUserRoleMenus" resultMap="BaseResultMap">
+    select 
+    rm.RoleId,rm.MenuId, rm.MenuId1
+    from UserRoles ur inner join RoleMenus rm
+    where UserId = #{userid,jdbcType=VARCHAR}
+  </select>
+  <select id="GetAllRoleMenus" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from RoleMenus 
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="auth.background.bean.RoleMenuKey" >
     delete from RoleMenus
     where RoleId = #{roleid,jdbcType=VARCHAR}
       and MenuId = #{menuid,jdbcType=VARCHAR}
   </delete>
+  <delete id="RemoveRowMenus" parameterType="java.lang.String" >
+    delete from RoleMenus
+    where RoleId = #{roleid,jdbcType=VARCHAR}
+  </delete>
+  
   <insert id="insert" parameterType="auth.background.bean.RoleMenu" >
     insert into RoleMenus (RoleId, MenuId, MenuId1
       )
     values (#{roleid,jdbcType=VARCHAR}, #{menuid,jdbcType=VARCHAR}, #{menuid1,jdbcType=VARCHAR}
       )
   </insert>
+  <insert id="BatchAddRowMenus" useGeneratedKeys="true" >  
+    insert into RoleMenus (RoleId, MenuId, MenuId1)   
+    values  
+    <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.RoleId},#{item.MenuId},#{item.MenuId})  
+    </foreach>  
+</insert>  
   <insert id="insertSelective" parameterType="auth.background.bean.RoleMenu" >
     insert into RoleMenus
     <trim prefix="(" suffix=")" suffixOverrides="," >

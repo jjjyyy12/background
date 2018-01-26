@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="auth.background.dao.RoleMapper" >
+ <cache eviction="LRU" flushInterval="1000" size="1024" readOnly="true"/>
   <resultMap id="BaseResultMap" type="auth.background.bean.Role" >
     <id column="Id" property="id" jdbcType="VARCHAR" />
     <result column="Code" property="code" jdbcType="VARCHAR" />
@@ -8,6 +9,7 @@
     <result column="CreateUserId" property="createuserid" jdbcType="VARCHAR" />
     <result column="Name" property="name" jdbcType="VARCHAR" />
     <result column="Remarks" property="remarks" jdbcType="VARCHAR" />
+     <association property="createuser" column="createuserid" select="auth.background.dao.UserMapper.selectByPrimaryKey" fetchType="eager"/>
   </resultMap>
   <sql id="Base_Column_List" >
     Id, Code, CreateTime, CreateUserId, Name, Remarks

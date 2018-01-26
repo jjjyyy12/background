@@ -106,7 +106,7 @@ public class UserAppService {
     	return cacheService2.GetSortList(handler, okey, 0, 0,-1);
     }
     
-    @Transactional 
+     
     public void BatchUpdateUserRoles(List<String> userIds, List<String> roleIds){
     	for(String uid : userIds){
     		DeleteCache(uid);
@@ -117,6 +117,7 @@ public class UserAppService {
     	user_update_userroles_normal userroleobj = new user_update_userroles_normal(QueueSerivce.exchangeName,userrolemsg);
     	queueSerivce.getAmqpTemplate().convertAndSend(QueueSerivce.exchangeName, userroleobj.getMessageRouter(), userroleobj);
     }
+    @Transactional
     public void BatchUpdateUserRolesImpl(List<String> userIds, List<String> roleIds){
     	List<UserRoleKey> list = new ArrayList<UserRoleKey>();
     	UserRoleKey e = null;
@@ -209,6 +210,7 @@ public class UserAppService {
     	userRoleDao.BatchDeleteUserRoles(userIds);
     	userDao.deleteBatchByPrimaryKey(userIds);
     }
+    
     private void DeleteCache(List<String> ids)
     {
         List<UserDto> userdtos = dzmapper.mapList(userDao.GetListByIds(ids),UserDto.class);
