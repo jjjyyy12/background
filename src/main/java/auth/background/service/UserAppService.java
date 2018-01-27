@@ -79,7 +79,7 @@ public class UserAppService {
     }
     //取部门人数
     public int GetChildrenByDepartmentCount(String departmentid){
-    	String okey=RedisConstants._instance+RedisConstants.UserKey+departmentid;
+    	String okey=RedisConstants._instance+RedisConstants.UserKey+"count"+departmentid;
     	RunnableCacheCount handler = () -> 
     	{ 
     		return userDao.GetChildrenByDepartmentCount(departmentid); 
@@ -228,7 +228,7 @@ public class UserAppService {
     }
     private void DeleteCache(String id)
     {
-        List<String> keys = new ArrayList<String>(3);
+        List<String> keys = new ArrayList<String>(2);
         keys.add(RedisConstants.UserRoleKey);
         keys.add(RedisConstants.UserKey);
         for(String rid : keys)

@@ -20,10 +20,38 @@
     from Roles
     where Id = #{id,jdbcType=VARCHAR}
   </select>
+  <select id="GetAllList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Roles
+  </select>
+  <select id="GetAllListCount" resultType="Integer">
+    select 
+    count(1)
+    from Roles
+  </select>
+    <select id="GetListByIds" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Roles 
+    where Id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from Roles
     where Id = #{id,jdbcType=VARCHAR}
   </delete>
+    <delete id="deleteBatchByPrimaryKey" >
+        delete from Roles where id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+ </delete>
   <insert id="insert" parameterType="auth.background.bean.Role" >
     insert into Roles (Id, Code, CreateTime, 
       CreateUserId, Name, Remarks
