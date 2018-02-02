@@ -15,6 +15,7 @@ import com.alibaba.fastjson.TypeReference;
 
 import auth.background.dto.MessageBase;
 import auth.background.dto.RoleDto;
+import auth.background.dto.RoleMenuMsg;
 import auth.background.dto.UserDto;
 import auth.background.dto.UserRoleMsg;
 import auth.background.service.RoleAppService;
@@ -47,6 +48,12 @@ public class RoleAsyncQueueListener {
 	    msg.setMessageBodyReturnByte(JSON.toJSONBytes(Id));
 	    return msg;
     }
- 
+	@RabbitListener(queues = "role_update_rolemenus_normal_fonour_consumerauth")
+    public void ProcessMsg_RoleMenu(MessageBase msg) {
+			byte[] msgbyte = msg.getMessageBodyByte();
+	    	TypeReference<RoleMenuMsg> typeReference = new TypeReference<RoleMenuMsg>() {};
+	    	RoleMenuMsg realmsg = JSON.parseObject(msgbyte, 0, msgbyte.length,Charset.forName("Utf-8"), typeReference.getType());
+	    	_roleAppService.UpdateRowMenusImpl(realmsg.Id,realmsg.menuIds);
+    }
  
 }

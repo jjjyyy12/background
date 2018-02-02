@@ -120,6 +120,53 @@
 			<a>createtime</a>
 			<b>CreateTime</b>
 		</field>
-		
+    </mapping>
+    <mapping>
+        <class-a>auth.background.bean.RoleMenu</class-a>
+        <class-b>auth.background.dto.RoleMenuDto</class-b>
+        <field>
+			<a>menuid</a>
+			<b>MenuId</b>
+		</field>
+		<field>
+			<a>roleid</a>
+			<b>RoleId</b>
+		</field>
+		<field>
+			<a>Menu.Url</a>
+			<b>Url</b>
+		</field>
+		<field>
+			<a>menu.name</a>
+			<b>MenuName</b>
+		</field>
+    </mapping>
+    <mapping>
+        <class-a>auth.background.bean.RoleMenu</class-a>
+        <class-b>auth.background.dto.RoleMenuDto</class-b>
+        <field>
+			<a>menuid</a>
+			<b>MenuId</b>
+		</field>
+		<field>
+			<a>roleid</a>
+			<b>RoleId</b>
+		</field>
+		<field>
+			<a>Menu.Url</a>
+			<b>Url</b>
+		</field>
+		<field>
+			<a>menu.name</a>
+			<b>MenuName</b>
+		</field>
+    </mapping>
+    <mapping>
+        <class-a>auth.background.bean.RoleMenu</class-a>
+        <class-b>java.lang.String</class-b>
+        <field>
+			<a>Url</a>
+			<b></b>
+		</field>
     </mapping>
 </mappings>

@@ -5,22 +5,31 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSON;
 import auth.background.bean.Role;
+import auth.background.bean.RoleMenuKey;
 import auth.background.bean.User;
+import auth.background.bean.UserRoleKey;
 import auth.background.config.RedisConstants;
 import auth.background.dao.RoleMapper;
+import auth.background.dao.RoleMenuMapper;
 import auth.background.dto.MessageBase;
 import auth.background.dto.RoleDto;
+import auth.background.dto.RoleMenuDto;
+import auth.background.dto.RoleMenuMsg;
 import auth.background.dto.UserDto;
 import auth.background.dto.role_delete_deleterole_normal;
 import auth.background.dto.role_update_insertupdate_rpc;
+import auth.background.dto.role_update_rolemenus_normal;
 import auth.background.util.BeanMapper;
 import auth.background.util.PageHelper;
 
@@ -28,10 +37,14 @@ import auth.background.util.PageHelper;
 public class RoleAppService {
     @Resource
     private RoleMapper roleDao;
+    @Resource
+    private RoleMenuMapper roleMenuDao;
 	@Resource
     private BeanMapper dzmapper;
 	@Resource
     private CacheService<RoleDto> cacheService;
+	@Resource
+    private CacheService<List<RoleMenuDto>> cacheService2;
 	@Resource
 	private QueueSerivce<RoleDto> queueSerivce;
 	
@@ -178,5 +191,67 @@ public class RoleAppService {
             cacheService.SortedSetUpdate(RedisConstants._instance + RedisConstants.RoleKey, dto, handler, false);
             DeleteCache(dto.getId());
         }
+    }
+    
+    public List<RoleMenuDto> GetRoleMenus(String Id)
+    {
+        String tkey = RedisConstants.RoleMenuKey + Id;
+        RunnableCacheSignel<List<RoleMenuDto>,String> handler = (x) -> 
+    	{ 
+    		return dzmapper.mapList(roleMenuDao.GetRoleMenus(x), RoleMenuDto.class); 
+    	};
+    	return cacheService2.Get(handler, tkey, Id);
+    }
+    //更新role的menus
+    public void UpdateRowMenus(String id, List<String> menuIds)
+    {
+    	if(id.isEmpty()) return;
+    	DeleteCache(id);
+    	RoleMenuMsg msg = new RoleMenuMsg();
+    	msg.Id=id;
+    	msg.menuIds = menuIds;
+    	role_update_rolemenus_normal obj = new role_update_rolemenus_normal(QueueSerivce.exchangeName, msg);
+    	queueSerivce.getAmqpTemplate().convertAndSend(QueueSerivce.exchangeName, obj.getMessageRouter(), obj);
+    }
+    @Transactional
+    public void UpdateRowMenusImpl(String id, List<String> menuIds){
+    	List<RoleMenuKey> list = new ArrayList<RoleMenuKey>();
+    	RoleMenuKey e = null;
+    	for(String uid : menuIds){
+    			e=new RoleMenuKey();
+    			e.setMenuid(uid);
+    			e.setRoleid(id);
+    			list.add(e);
+    	}
+    	roleMenuDao.RemoveRowMenus(id);
+    	roleMenuDao.BatchAddRowMenus(list);
+    }
+    
+    public List<RoleMenuDto> GetAllRowMenus()
+    {
+        String tkey = RedisConstants.RoleMenuKey;
+        RunnableCacheSignel<List<RoleMenuDto>,String> handler = (x) -> 
+    	{ 
+    		return dzmapper.mapList(roleMenuDao.GetAllRoleMenus(), RoleMenuDto.class); 
+    	};
+    	return cacheService2.Get(handler, tkey, "");
+    }
+    private List<RoleMenuDto> GetUserRowMenus(List<String> roleIds)
+    {
+        List<RoleMenuDto> rlist = GetAllRowMenus();
+        Iterator<RoleMenuDto> iter = rlist.iterator();  
+        while(iter.hasNext()){  
+        	RoleMenuDto t = iter.next();  
+            if(!roleIds.contains(t.getRoleId())){  
+                iter.remove();  
+            }
+        }
+        return rlist;
+    }
+    public List<String> GetUserRowMenusUrls(List<String> roleIds)
+    {
+        List<RoleMenuDto> rlist = GetUserRowMenus(roleIds);
+        List<String> slist = dzmapper.mapList(rlist, String.class);
+        return slist;
     }
 }
