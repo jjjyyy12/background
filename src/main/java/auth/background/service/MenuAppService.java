@@ -20,8 +20,10 @@ import auth.background.bean.RoleMenuKey;
 import auth.background.bean.User;
 import auth.background.bean.UserRoleKey;
 import auth.background.config.RedisConstants;
+import auth.background.dao.MenuMapper;
 import auth.background.dao.RoleMapper;
 import auth.background.dao.RoleMenuMapper;
+import auth.background.dto.MenuDto;
 import auth.background.dto.MessageBase;
 import auth.background.dto.RoleDto;
 import auth.background.dto.RoleMenuDto;
@@ -34,19 +36,17 @@ import auth.background.util.BeanMapper;
 import auth.background.util.PageHelper;
 
 @Service
-public class RoleAppService {
+public class MenuAppService {
     @Resource
-    private RoleMapper roleDao;
-    @Resource
-    private RoleMenuMapper roleMenuDao;
+    private MenuMapper menuDao;
+ 
 	@Resource
     private BeanMapper dzmapper;
 	@Resource
-    private CacheService<RoleDto> cacheService;
+    private CacheService<MenuDto> cacheService;
+ 
 	@Resource
-    private CacheService<List<RoleMenuDto>> cacheService2;
-	@Resource
-	private QueueSerivce<RoleDto> queueSerivce;
+	private QueueSerivce<MenuDto> queueSerivce;
 	
 	//查询role
     public RoleDto Get(String id){
@@ -54,7 +54,7 @@ public class RoleAppService {
     	String key = RedisConstants._instance+RedisConstants.RoleKey+id;
     	RunnableCacheSignel<RoleDto,String> handler = (x) -> 
     	{ 
-    		return dzmapper.map(roleDao.selectByPrimaryKey(x), RoleDto.class); 
+    		return dzmapper.map(menuDao.selectByPrimaryKey(x), RoleDto.class); 
     	};
     	return cacheService.Get(handler, key, id);
     }
@@ -64,7 +64,7 @@ public class RoleAppService {
     	String key = RedisConstants._instance+RedisConstants.RoleKey;
     	RunnableCacheList<RoleDto> handler = () -> 
     	{ 
-    		List<Role> llist = roleDao.GetAllList();
+    		List<Role> llist = menuDao.GetAllList();
     		return dzmapper.mapList(llist,  RoleDto.class); 
     	};
     	return cacheService.GetSortList(handler, key, 0, 0,-1);

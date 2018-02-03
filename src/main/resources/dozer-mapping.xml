@@ -161,12 +161,4 @@
 			<b>MenuName</b>
 		</field>
     </mapping>
-    <mapping>
-        <class-a>auth.background.bean.RoleMenu</class-a>
-        <class-b>java.lang.String</class-b>
-        <field>
-			<a>Url</a>
-			<b></b>
-		</field>
-    </mapping>
 </mappings>
