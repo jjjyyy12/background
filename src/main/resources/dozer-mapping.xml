@@ -74,7 +74,6 @@
 			<a>isdeleted</a>
 			<b>IsDeleted</b>
 		</field>
-		
     </mapping>
 	<mapping>
         <class-a>auth.background.bean.UserRoleKey</class-a>
@@ -142,23 +141,43 @@
 		</field>
     </mapping>
     <mapping>
-        <class-a>auth.background.bean.RoleMenu</class-a>
-        <class-b>auth.background.dto.RoleMenuDto</class-b>
-        <field>
-			<a>menuid</a>
-			<b>MenuId</b>
+        <class-a>auth.background.bean.Menu</class-a>
+        <class-b>auth.background.dto.MenuDto</class-b>
+       <field>
+			<a>id</a>
+			<b>Id</b>
+		</field>
+		     <field>
+			<a>parentid</a>
+			<b>ParentId</b>
 		</field>
 		<field>
-			<a>roleid</a>
-			<b>RoleId</b>
+			<a>code</a>
+			<b>Code</b>
 		</field>
 		<field>
-			<a>Menu.Url</a>
-			<b>Url</b>
+			<a>name</a>
+			<b>Name</b>
 		</field>
 		<field>
-			<a>menu.name</a>
-			<b>MenuName</b>
+			<a>url</a>
+			<b>URL</b>
+		</field>
+		<field>
+			<a>type</a>
+			<b>Type</b>
+		</field>		
+		<field>
+			<a>remarks</a>
+			<b>Remarks</b>
+		</field>
+		<field>
+			<a>icon</a>
+			<b>Icon</b>
+		</field>
+		<field>
+			<a>serialnumber</a>
+			<b>SerialNumber</b>
 		</field>
     </mapping>
 </mappings>

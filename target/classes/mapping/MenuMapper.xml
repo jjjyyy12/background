@@ -21,10 +21,22 @@
     from Menus
     where Id = #{id,jdbcType=VARCHAR}
   </select>
+  <select id="GetAllList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Menus
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from Menus
     where Id = #{id,jdbcType=VARCHAR}
   </delete>
+  <delete id="deleteBatchByPrimaryKey" >
+        delete from Menus where id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+ </delete>
   <insert id="insert" parameterType="auth.background.bean.Menu" >
     insert into Menus (Id, Code, Icon, 
       Name, ParentId, Remarks, 

@@ -12,4 +12,6 @@ public class RedisConstants {
     public static final String RoleKey="Role";
     public static final String RoleMenuKey="RoleMenu";
     
+    public static final String MenuKey="Menu";
+    
 }

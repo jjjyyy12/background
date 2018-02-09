@@ -15,23 +15,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import auth.background.bean.Role;
-import auth.background.bean.RoleMenuKey;
+
+import auth.background.bean.Menu;
+
 import auth.background.bean.User;
-import auth.background.bean.UserRoleKey;
+
 import auth.background.config.RedisConstants;
 import auth.background.dao.MenuMapper;
-import auth.background.dao.RoleMapper;
-import auth.background.dao.RoleMenuMapper;
+
 import auth.background.dto.MenuDto;
 import auth.background.dto.MessageBase;
-import auth.background.dto.RoleDto;
-import auth.background.dto.RoleMenuDto;
-import auth.background.dto.RoleMenuMsg;
+
 import auth.background.dto.UserDto;
-import auth.background.dto.role_delete_deleterole_normal;
-import auth.background.dto.role_update_insertupdate_rpc;
-import auth.background.dto.role_update_rolemenus_normal;
+import auth.background.dto.menu_delete_deletemenu_normal;
+import auth.background.dto.menu_update_insertupdate_rpc;
 import auth.background.util.BeanMapper;
 import auth.background.util.PageHelper;
 
@@ -48,31 +45,31 @@ public class MenuAppService {
 	@Resource
 	private QueueSerivce<MenuDto> queueSerivce;
 	
-	//查询role
-    public RoleDto Get(String id){
+	//查询menu
+    public MenuDto Get(String id){
     	if(id==null||id.length()<=0) return null;
-    	String key = RedisConstants._instance+RedisConstants.RoleKey+id;
-    	RunnableCacheSignel<RoleDto,String> handler = (x) -> 
+    	String key = RedisConstants._instance+RedisConstants.MenuKey+id;
+    	RunnableCacheSignel<MenuDto,String> handler = (x) -> 
     	{ 
-    		return dzmapper.map(menuDao.selectByPrimaryKey(x), RoleDto.class); 
+    		return dzmapper.map(menuDao.selectByPrimaryKey(x), MenuDto.class); 
     	};
     	return cacheService.Get(handler, key, id);
     }
 
-    public List<RoleDto> GetAllList()
+    public List<MenuDto> GetAllList()
     {
-    	String key = RedisConstants._instance+RedisConstants.RoleKey;
-    	RunnableCacheList<RoleDto> handler = () -> 
+    	String key = RedisConstants._instance+RedisConstants.MenuKey;
+    	RunnableCacheList<MenuDto> handler = () -> 
     	{ 
-    		List<Role> llist = menuDao.GetAllList();
-    		return dzmapper.mapList(llist,  RoleDto.class); 
+    		List<Menu> llist = menuDao.GetAllList();
+    		return dzmapper.mapList(llist,  MenuDto.class); 
     	};
     	return cacheService.GetSortList(handler, key, 0, 0,-1);
     }
  
-    public List<RoleDto> GetListPaged(int startPage, int pageSize){
-    	List<RoleDto> list = GetAllList();
-    	PageHelper<RoleDto> ph= new PageHelper<RoleDto>();
+    public List<MenuDto> GetListPaged(int startPage, int pageSize){
+    	List<MenuDto> list = GetAllList();
+    	PageHelper<MenuDto> ph= new PageHelper<MenuDto>();
     	return ph.paged(list, startPage, pageSize, list.size());
     }
     //单个删除
@@ -86,37 +83,36 @@ public class MenuAppService {
     public void DeleteBatch(List<String> ids){
     	if(ids.isEmpty()) return;
     	DeleteCache(ids);
-    	role_delete_deleterole_normal delobj = new role_delete_deleterole_normal(QueueSerivce.exchangeName, ids);
+    	menu_delete_deletemenu_normal delobj = new menu_delete_deletemenu_normal(QueueSerivce.exchangeName, ids);
     	queueSerivce.getAmqpTemplate().convertAndSend(QueueSerivce.exchangeName, delobj.getMessageRouter(), delobj);
     }
      
     public void DeleteBatchImpl(List<String> Ids){
-    	roleDao.deleteBatchByPrimaryKey(Ids);
+    	menuDao.deleteBatchByPrimaryKey(Ids);
     }
     private void DeleteCache(List<String> ids)
     {
-        List<RoleDto> list = GetAllList();
-        List<RoleDto> dtos = new ArrayList<RoleDto>(ids.size());
-        for(RoleDto dto : list)
+        List<MenuDto> list = GetAllList();
+        List<MenuDto> dtos = new ArrayList<MenuDto>(ids.size());
+        for(MenuDto dto : list)
         	dtos.add(dto);
         if (dtos != null)
         {
-        	RunnableCompare<RoleDto> handler=null;
-            for(RoleDto dto : dtos)
+        	RunnableCompare<MenuDto> handler=null;
+            for(MenuDto dto : dtos)
             {
             	handler = (t) -> { return dto.getId().equals(t.getId()); };
             	cacheService.GetClass(dto);//T GetClass
-                cacheService.SortedSetUpdate(RedisConstants._instance+RedisConstants.RoleKey, dto, handler, true);
+                cacheService.SortedSetUpdate(RedisConstants._instance+RedisConstants.MenuKey, dto, handler, true);
                 DeleteCache(dto.getId());
             }
         }
     }
     private void DeleteCache(String id)
     {
-        List<String> keys = new ArrayList<String>(3);
-        keys.add(RedisConstants.RoleKey+id);
-        keys.add(RedisConstants.RoleMenuKey);
-        keys.add(RedisConstants.RoleMenuKey+id);
+        List<String> keys = new ArrayList<String>(2);
+        keys.add(RedisConstants.MenuKey+id);
+        keys.add(RedisConstants.MenuKey);
         for(String rid : keys)
         {
         	cacheService.Remove(rid);//RemoveAllAsync 需要key落在同一个solt上
@@ -124,35 +120,28 @@ public class MenuAppService {
     }
     
     //新增或更新具体实现
-    public String InsertUpdateImpl(RoleDto dto){
-    	Role record = dzmapper.map(dto, Role.class);
+    public String InsertUpdateImpl(MenuDto dto){
+    	Menu record = dzmapper.map(dto, Menu.class);
 		String id = record.getId();
 
     	if(id != null && id.length() != 0)
-    		 roleDao.updateByPrimaryKeySelective(record);
+    		menuDao.updateByPrimaryKeySelective(record);
     	else 
     	{
     		id = UUID.randomUUID().toString();
     		record.setId(id);
-    		 roleDao.insertSelective(record);
+    		menuDao.insertSelective(record);
     	}
     	return id;
     }
      
     //更新和新增，mq
-    public boolean InsertUpdate(RoleDto dto,String currUserId){
+    public boolean InsertUpdate(MenuDto dto,String currUserId){
 		String id = dto.getId();
-		RoleDto cuser;
+		MenuDto cuser;
     	if(id != null && id.length() != 0)
     	{
     		cuser = dto;
-            if (currUserId != null && currUserId.length() != 0)
-            {
-                cuser.setCreateUserId(currUserId);
-                DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date dt=new Date();
-                cuser.setCreateTime(sdf.format(dt));//.replace(" ", "T"));
-            }
     	}
     	else
     	{
@@ -167,10 +156,10 @@ public class MenuAppService {
     }
     //更新或新增发消息
     @SuppressWarnings("unchecked")
-	private void updateMessage(RoleDto dto,MessageBase replyMsg){
-    	role_update_insertupdate_rpc obj = new role_update_insertupdate_rpc(QueueSerivce.exchangeName,dto);
+	private void updateMessage(MenuDto dto,MessageBase replyMsg){
+    	menu_update_insertupdate_rpc obj = new menu_update_insertupdate_rpc(QueueSerivce.exchangeName,dto);
 //		Object reply = (Message<MessageBase>) queueSerivce.getAmqpTemplate().convertSendAndReceive(QueueSerivce.exchangeName, delobj.getMessageRouter(), delobj);
-		RunnableQueueSucc<RoleDto,MessageBase> succHandle
+		RunnableQueueSucc<MenuDto,MessageBase> succHandle
 		= (x,y) -> {
 			x.setId(JSON.parseObject( y.getMessageBodyReturnByte(), String.class)); 
 			InsertOrUpdateCache(x);
@@ -182,81 +171,16 @@ public class MenuAppService {
 			e.printStackTrace();
 		}
     }
-    private void InsertOrUpdateCache(RoleDto dto)
+    private void InsertOrUpdateCache(MenuDto dto)
     {
         if (dto != null)
         {
-        	RunnableCompare<RoleDto> handler = (t) -> { return dto.getId().equals(t.getId()); };
+        	RunnableCompare<MenuDto> handler = (t) -> { return dto.getId().equals(t.getId()); };
             cacheService.GetClass(dto);//T GetClass
-            cacheService.SortedSetUpdate(RedisConstants._instance + RedisConstants.RoleKey, dto, handler, false);
+            cacheService.SortedSetUpdate(RedisConstants._instance + RedisConstants.MenuKey, dto, handler, false);
             DeleteCache(dto.getId());
         }
     }
     
-    public List<RoleMenuDto> GetRoleMenus(String Id)
-    {
-        String tkey = RedisConstants.RoleMenuKey + Id;
-        RunnableCacheSignel<List<RoleMenuDto>,String> handler = (x) -> 
-    	{ 
-    		return dzmapper.mapList(roleMenuDao.GetRoleMenus(x), RoleMenuDto.class); 
-    	};
-    	return cacheService2.Get(handler, tkey, Id);
-    }
-    //更新role的menus
-    public void UpdateRowMenus(String id, List<String> menuIds)
-    {
-    	if(id.isEmpty()) return;
-    	DeleteCache(id);
-    	RoleMenuMsg msg = new RoleMenuMsg();
-    	msg.Id=id;
-    	msg.menuIds = menuIds;
-    	role_update_rolemenus_normal obj = new role_update_rolemenus_normal(QueueSerivce.exchangeName, msg);
-    	queueSerivce.getAmqpTemplate().convertAndSend(QueueSerivce.exchangeName, obj.getMessageRouter(), obj);
-    }
-    @Transactional
-    public void UpdateRowMenusImpl(String id, List<String> menuIds){
-    	List<RoleMenuKey> list = new ArrayList<RoleMenuKey>();
-    	RoleMenuKey e = null;
-    	for(String uid : menuIds){
-    			e=new RoleMenuKey();
-    			e.setMenuid(uid);
-    			e.setRoleid(id);
-    			list.add(e);
-    	}
-    	roleMenuDao.RemoveRowMenus(id);
-    	roleMenuDao.BatchAddRowMenus(list);
-    }
-    
-    public List<RoleMenuDto> GetAllRowMenus()
-    {
-        String tkey = RedisConstants.RoleMenuKey;
-        RunnableCacheSignel<List<RoleMenuDto>,String> handler = (x) -> 
-    	{ 
-    		return dzmapper.mapList(roleMenuDao.GetAllRoleMenus(), RoleMenuDto.class); 
-    	};
-    	return cacheService2.Get(handler, tkey, "");
-    }
-    private List<RoleMenuDto> GetUserRowMenus(List<String> roleIds)
-    {
-        List<RoleMenuDto> rlist = GetAllRowMenus();
-        Iterator<RoleMenuDto> iter = rlist.iterator();  
-        while(iter.hasNext()){  
-        	RoleMenuDto t = iter.next();  
-            if(!roleIds.contains(t.getRoleId())){  
-                iter.remove();  
-            }
-        }
-        return rlist;
-    }
-    public List<String> GetUserRowMenusUrls(List<String> roleIds)
-    {
-        List<RoleMenuDto> rlist = GetUserRowMenus(roleIds);
-        List<String> slist = new ArrayList<String>(rlist.size());
-        for(RoleMenuDto rid : rlist)
-        {
-        	slist.add(rid.getUrl());
-        }
-        return slist;
-    }
  
 }
