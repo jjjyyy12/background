@@ -29,10 +29,22 @@
     from Departments
     where Id = #{id,jdbcType=VARCHAR}
   </select>
+  <select id="GetAllList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Departments
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from Departments
     where Id = #{id,jdbcType=VARCHAR}
   </delete>
+   <delete id="deleteBatchByPrimaryKey" >
+        delete from Departments where id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+ </delete>
   <insert id="insert" parameterType="auth.background.bean.Department" >
     insert into Departments (Id, Code, ContactNumber, 
       CreateTime, CreateUserId, IsDeleted, 

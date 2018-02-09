@@ -29,7 +29,7 @@ public class RoleAsyncQueueListener {
     /**user listener
      */
 //	@RabbitHandler
-	@RabbitListener(queues = "role_delete_deleteuser_normal_fonour_consumerauth")
+	@RabbitListener(queues = "role_delete_deleterole_normal_fonour_consumerauth")
     public void ProcessMsg_Role(MessageBase msg) {
 			byte[] msgbyte = msg.getMessageBodyByte();
 	    	TypeReference<ArrayList<String>> typeReference = new TypeReference<ArrayList<String>>() {};

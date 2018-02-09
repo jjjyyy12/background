@@ -1,5 +1,7 @@
 package auth.background.dao;
 
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
 import auth.background.bean.Department;
@@ -19,4 +21,7 @@ public interface DepartmentMapper {
     int updateByPrimaryKeyWithBLOBs(Department record);
 
     int updateByPrimaryKey(Department record);
+    
+    List<Department> GetAllList();
+    int deleteBatchByPrimaryKey(List<String> list);
 }
