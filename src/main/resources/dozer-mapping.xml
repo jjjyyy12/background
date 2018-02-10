@@ -180,4 +180,53 @@
 			<b>SerialNumber</b>
 		</field>
     </mapping>
+    
+     <mapping>
+        <class-a>auth.background.bean.Department</class-a>
+        <class-b>auth.background.dto.DepartmentDto</class-b>
+        <field>
+			<a>id</a>
+			<b>Id</b>
+		</field>
+		     <field>
+			<a>code</a>
+			<b>Code</b>
+		</field>
+		<field>
+			<a>contactnumber</a>
+			<b>ContactNumber</b>
+		</field>
+		<field>
+			<a>name</a>
+			<b>Name</b>
+		</field>
+		<field>
+			<a>manager</a>
+			<b>Manager</b>
+		</field>
+		<field>
+			<a>parentid</a>
+			<b>ParentId</b>
+		</field>		
+		<field>
+			<a>remarks</a>
+			<b>Remarks</b>
+		</field>
+		<field>
+			<a>createuserid</a>
+			<b>CreateUserId</b>
+		</field>
+		<field type="one-way">
+			<a>createuser.username</a>
+			<b>CreateUserName</b>
+		</field>
+		<field>
+			<a>createtime</a>
+			<b>CreateTime</b>
+		</field>
+		<field>
+			<a>isdeleted</a>
+			<b>IsDeleted</b>
+		</field>
+    </mapping>
 </mappings>

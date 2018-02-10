@@ -11,6 +11,7 @@ public class DepartmentDto {
 	private String CreateUserName;
 	private String CreateTime;
 	private String Remarks;
+	private int IsDeleted;
 	public String getId() {
 		return Id;
 	}
@@ -72,6 +73,12 @@ public class DepartmentDto {
 	}
 	public void setCreateTime(String createTime) {
 		CreateTime = createTime;
+	}
+	public int getIsDeleted() {
+		return IsDeleted;
+	}
+	public void setIsDeleted(int isDeleted) {
+		IsDeleted = isDeleted;
 	}
 	 
 	 

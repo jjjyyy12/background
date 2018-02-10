@@ -23,16 +23,22 @@ import auth.background.dto.ResetPasswordModel;
 import auth.background.dto.UserDto;
 import auth.background.dto.UserRoleDto;
 import auth.background.dto.UserRoleMsg;
-import auth.background.dto.user_delete_deleteuser_normal;
-import auth.background.dto.user_update_insertupdate_rpc;
-import auth.background.dto.user_update_userroles_normal;
+import auth.background.dto.msg.user_delete_deleteuser_normal;
+import auth.background.dto.msg.user_update_insertupdate_rpc;
+import auth.background.dto.msg.user_update_userroles_normal;
+import auth.background.service.common.CacheService;
+import auth.background.service.common.QueueSerivce;
+import auth.background.service.runnable.RunnableCacheCount;
+import auth.background.service.runnable.RunnableCacheList;
+import auth.background.service.runnable.RunnableCacheSignel;
+import auth.background.service.runnable.RunnableCompare;
+import auth.background.service.runnable.RunnableQueueSucc;
 import auth.background.util.BeanMapper;
 import auth.background.util.PageHelper;
  
 
 @Service
 public class UserAppService {
-
 
     @Resource
     private UserMapper userDao;
@@ -51,8 +57,6 @@ public class UserAppService {
     
 	@Resource
 	private QueueSerivce<UserDto> queueSerivce;
-	
-	
 	
     public UserDto CheckUser(String userName, String password){
     	return dzmapper.map(userDao.CheckUser(userName,password), UserDto.class);

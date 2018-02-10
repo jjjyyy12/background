@@ -22,13 +22,19 @@ import auth.background.bean.User;
 
 import auth.background.config.RedisConstants;
 import auth.background.dao.MenuMapper;
-
+import auth.background.dto.DepartmentDto;
 import auth.background.dto.MenuDto;
 import auth.background.dto.MessageBase;
 
 import auth.background.dto.UserDto;
-import auth.background.dto.menu_delete_deletemenu_normal;
-import auth.background.dto.menu_update_insertupdate_rpc;
+import auth.background.dto.msg.menu_delete_deletemenu_normal;
+import auth.background.dto.msg.menu_update_insertupdate_rpc;
+import auth.background.service.common.CacheService;
+import auth.background.service.common.QueueSerivce;
+import auth.background.service.runnable.RunnableCacheList;
+import auth.background.service.runnable.RunnableCacheSignel;
+import auth.background.service.runnable.RunnableCompare;
+import auth.background.service.runnable.RunnableQueueSucc;
 import auth.background.util.BeanMapper;
 import auth.background.util.PageHelper;
 
@@ -71,6 +77,17 @@ public class MenuAppService {
     	List<MenuDto> list = GetAllList();
     	PageHelper<MenuDto> ph= new PageHelper<MenuDto>();
     	return ph.paged(list, startPage, pageSize, list.size());
+    }
+    public List<MenuDto> GetMenusByParent(String parentId,int startPage, int pageSize){
+    	List<MenuDto> list = GetAllList();
+    	List<MenuDto> rlist = new ArrayList<MenuDto>();
+    	for (int i = 0,j = list.size(); i < j; i++){
+    		MenuDto item = list.get(i);
+    		if(parentId.equals(item.getId()))
+    			rlist.add(item);
+    	}
+     	PageHelper<MenuDto> ph= new PageHelper<MenuDto>();
+    	return ph.paged(rlist, startPage, pageSize, list.size());
     }
     //单个删除
     public void Delete(String id){

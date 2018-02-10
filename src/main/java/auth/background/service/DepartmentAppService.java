@@ -15,10 +15,14 @@ import auth.background.dao.DepartmentMapper;
 import auth.background.dto.DepartmentDto;
 
 import auth.background.dto.MessageBase;
-
-import auth.background.dto.department_delete_deletedepartment_normal;
-import auth.background.dto.department_update_insertupdate_rpc;
-
+import auth.background.dto.msg.department_delete_deletedepartment_normal;
+import auth.background.dto.msg.department_update_insertupdate_rpc;
+import auth.background.service.common.CacheService;
+import auth.background.service.common.QueueSerivce;
+import auth.background.service.runnable.RunnableCacheList;
+import auth.background.service.runnable.RunnableCacheSignel;
+import auth.background.service.runnable.RunnableCompare;
+import auth.background.service.runnable.RunnableQueueSucc;
 import auth.background.util.BeanMapper;
 import auth.background.util.PageHelper;
 
@@ -57,10 +61,17 @@ public class DepartmentAppService {
     	return cacheService.GetSortList(handler, key, 0, 0,-1);
     }
  
-    public List<DepartmentDto> GetListPaged(int startPage, int pageSize){
+    public List<DepartmentDto> GetChildrenByParent(String parentId,int startPage, int pageSize){
     	List<DepartmentDto> list = GetAllList();
-    	PageHelper<DepartmentDto> ph= new PageHelper<DepartmentDto>();
-    	return ph.paged(list, startPage, pageSize, list.size());
+    	List<DepartmentDto> rlist = new ArrayList<DepartmentDto>();
+    	for (int i = 0,j = list.size(); i < j; i++){
+    		DepartmentDto item = list.get(i);
+    		if(parentId.equals(item.getId()))
+    			rlist.add(item);
+    	}
+    		
+     	PageHelper<DepartmentDto> ph= new PageHelper<DepartmentDto>();
+    	return ph.paged(rlist, startPage, pageSize, list.size());
     }
     //单个删除
     public void Delete(String id){

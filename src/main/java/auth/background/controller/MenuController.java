@@ -12,30 +12,52 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import auth.background.dto.BatchUserRoleModel;
+import auth.background.dto.DepartmentDto;
+import auth.background.dto.MenuDto;
 import auth.background.dto.PagedObj;
-import auth.background.dto.ResetPasswordModel;
 import auth.background.dto.ResultObj;
-import auth.background.dto.UserDto;
-import auth.background.dto.UserRoleModel;
-import auth.background.service.UserAppService;
+import auth.background.dto.TreeModel;
+import auth.background.service.DepartmentAppService;
+import auth.background.service.MenuAppService;
 
 @RestController
-@RequestMapping("/User")
-public class UserController extends ControllerBase {
+@RequestMapping("/Menu")
+public class MenuController extends ControllerBase {
     @Resource
-    private UserAppService _service;
+    private MenuAppService _service;
 	
     @RequestMapping("/Get")
-    public UserDto Get(@RequestParam("id") String id)
+    public MenuDto Get(@RequestParam("id") String id)
     {
     	return _service.Get(id);
     }
-    
-    @RequestMapping("/GetChildrenByParent")
-    public PagedObj GetChildrenByParent(String departmentId, int startPage, int pageSize){
-    	 int rowCount = _service.GetChildrenByDepartmentCount(departmentId);
-         List<UserDto> result = _service.GetChildrenByDepartment(departmentId, startPage, pageSize, rowCount);
+    @RequestMapping("/GetTreeData")
+    public List<TreeModel> GetTreeData()
+    {
+    	List<MenuDto> dtos = _service.GetAllList();
+        List<TreeModel> treeModels = new ArrayList<TreeModel>();
+        for (MenuDto dto : dtos)
+        {
+        	TreeModel item = new TreeModel();
+        	item.setId(dto.getId());
+        	item.setText(dto.getName());
+        	item.setParent(dto.getParentid().length() == 0 ? "#" : dto.getParentid() );
+            treeModels.add(item);
+        }
+        return  treeModels;
+    }
+    /// <summary>
+    /// 获取子级功能列表
+    /// </summary>
+    /// <param name="parentId">父id</param>
+    /// <param name="startPage">开始页数</param>
+    /// <param name="pageSize">每页记录</param>
+    /// <returns></returns>
+    // GET api/v1/[controller]/GetMenusByParent/1[?pageSize=3&pageIndex=10]
+    @RequestMapping("/GetMenusByParent/{parentId}")
+    public PagedObj GetMenusByParent(String parentId, int startPage, int pageSize){
+         List<MenuDto> result = _service.GetMenusByParent(parentId, startPage, pageSize);
+         int rowCount = result.size();
          return Paged(result,rowCount,startPage,pageSize);
     }
     
@@ -44,7 +66,7 @@ public class UserController extends ControllerBase {
     @SuppressWarnings("null")
 	@RequestMapping(value="/Edit", method = RequestMethod.POST)
     @ResponseBody
-    public ResultObj Edit(@RequestBody UserDto dto,HttpServletRequest request){
+    public ResultObj Edit(@RequestBody MenuDto dto,HttpServletRequest request){
     	ResultObj res = new ResultObj();
     	Object cu = request.getSession().getAttribute("CurrentUser");
     	if(cu==null||cu.toString().length()==0)
@@ -106,69 +128,5 @@ public class UserController extends ControllerBase {
     	return res;
     }
     
-    @RequestMapping(value="/ResetPassword", method = RequestMethod.POST)
-    @ResponseBody
-    public ResultObj ResetPassword(@RequestBody ResetPasswordModel rpm){
-    	ResultObj res = new ResultObj();
-    	try{
-    		String resMsg= _service.ResetPassword(rpm);
-    		if("Success".equals(resMsg)){
-    			res.setResult("Success");
-    		}
-    		else{
-    			res.setResult("Faild");
-        		res.setMessage(resMsg);
-    		}
-    	}
-    	catch(Exception ex)
-    	{
-    		ex.printStackTrace();
-    		res.setResult("Faild");
-    		res.setMessage(ex.getMessage());
-    	}
-    	return res;
-    }
-    
-    @RequestMapping(value="/BatchUserRole", method = RequestMethod.POST)
-    @ResponseBody
-    public ResultObj BatchUserRole(@RequestBody BatchUserRoleModel rpm){
-    	ResultObj res = new ResultObj();
-    	try{
-            List<String> uIds =  GetList(rpm.getUserIDs(),"_");
-            List<String> rIds = GetList(rpm.getRoleIDs(),"_");
-            _service.BatchUpdateUserRoles(uIds,rIds);
-    		 res.setResult("Success");
-    	}
-    	catch(Exception ex)
-    	{
-    		ex.printStackTrace();
-    		res.setResult("Faild");
-    		res.setMessage(ex.getMessage());
-    	}
-    	return res;
-    }
-    @RequestMapping(value="/UserRole", method = RequestMethod.POST)
-    @ResponseBody
-    public ResultObj UserRole(@RequestBody UserRoleModel rpm){
-    	ResultObj res = new ResultObj();
-    	try{
-    		if(rpm==null)
-    			throw new Exception("UserID is null");
-    		
-            List<String> uIds = new ArrayList<String>(1);
-            uIds.add(rpm.getUserRoleId());
-            List<String> rIds = GetList(rpm.getRoleIDs(),"_");
-            _service.BatchUpdateUserRoles(uIds,rIds);
-    		 res.setResult("Success");
-    	 
-    	}
-    	catch(Exception ex)
-    	{
-    		ex.printStackTrace();
-    		res.setResult("Faild");
-    		res.setMessage(ex.getMessage());
-    	}
-    	return res;
-    }
     
 }

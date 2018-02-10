@@ -27,9 +27,15 @@ import auth.background.dto.RoleDto;
 import auth.background.dto.RoleMenuDto;
 import auth.background.dto.RoleMenuMsg;
 import auth.background.dto.UserDto;
-import auth.background.dto.role_delete_deleterole_normal;
-import auth.background.dto.role_update_insertupdate_rpc;
-import auth.background.dto.role_update_rolemenus_normal;
+import auth.background.dto.msg.role_delete_deleterole_normal;
+import auth.background.dto.msg.role_update_insertupdate_rpc;
+import auth.background.dto.msg.role_update_rolemenus_normal;
+import auth.background.service.common.CacheService;
+import auth.background.service.common.QueueSerivce;
+import auth.background.service.runnable.RunnableCacheList;
+import auth.background.service.runnable.RunnableCacheSignel;
+import auth.background.service.runnable.RunnableCompare;
+import auth.background.service.runnable.RunnableQueueSucc;
 import auth.background.util.BeanMapper;
 import auth.background.util.PageHelper;
 
@@ -236,7 +242,7 @@ public class RoleAppService {
     	};
     	return cacheService2.Get(handler, tkey, "");
     }
-    private List<RoleMenuDto> GetUserRowMenus(List<String> roleIds)
+    public List<RoleMenuDto> GetUserRowMenus(List<String> roleIds)
     {
         List<RoleMenuDto> rlist = GetAllRowMenus();
         Iterator<RoleMenuDto> iter = rlist.iterator();  
@@ -248,7 +254,7 @@ public class RoleAppService {
         }
         return rlist;
     }
-    public List<String> GetUserRowMenusUrls(List<String> roleIds)
+    public List<String> GetUserRoleMenusUrls(List<String> roleIds)
     {
         List<RoleMenuDto> rlist = GetUserRowMenus(roleIds);
         List<String> slist = new ArrayList<String>(rlist.size());
