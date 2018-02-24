@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,7 +56,7 @@ public class MenuController extends ControllerBase {
     /// <returns></returns>
     // GET api/v1/[controller]/GetMenusByParent/1[?pageSize=3&pageIndex=10]
     @RequestMapping("/GetMenusByParent/{parentId}")
-    public PagedObj GetMenusByParent(String parentId, int startPage, int pageSize){
+    public PagedObj GetMenusByParent(@PathVariable("parentId") String parentId, int startPage, int pageSize){
          List<MenuDto> result = _service.GetMenusByParent(parentId, startPage, pageSize);
          int rowCount = result.size();
          return Paged(result,rowCount,startPage,pageSize);
@@ -64,9 +65,9 @@ public class MenuController extends ControllerBase {
     //http://localhost:8080/User/Edit   post：  {"id":"0ad96163-e577-42c9-19f4-08d48b9df64b","createtime":1493099210421,"createuserid":"72e5b5f5-24f1-46e1-8309-08d411e1c631","departmentid":"e20af586-bca7-42bd-efa1-08d411e2b01c","email":"8","isdeleted":0,"lastlogintime":-62135798400000,"logintimes":0,"mobilenumber":"8","name":"8","password":"8","remarks":"8","username":"88"}
     //{ "dto": { "Id":"08d4b7be-d4c4-915a-1eb3-6526503bd369", "DepartmentId":"e20af586-bca7-42bd-efa1-08d411e2b01c", "Name":"12", "UserName": "12", "Email":"12", "MobileNumber":"12", "Remarks":"12", "Password":"12" } }
     @SuppressWarnings("null")
-	@RequestMapping(value="/Edit", method = RequestMethod.POST)
+	@RequestMapping(value="/Create", method = RequestMethod.POST)
     @ResponseBody
-    public ResultObj Edit(@RequestBody MenuDto dto,HttpServletRequest request){
+    public ResultObj Create(@RequestBody MenuDto dto,HttpServletRequest request){
     	ResultObj res = new ResultObj();
     	Object cu = request.getSession().getAttribute("CurrentUser");
     	if(cu==null||cu.toString().length()==0)
@@ -88,9 +89,29 @@ public class MenuController extends ControllerBase {
     	}
     	return res;
     }
-    
-    @RequestMapping(value="/Delete", method = RequestMethod.POST)
-    public ResultObj Delete(String id){
+    @SuppressWarnings("null")
+	@RequestMapping(value="/Edit", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResultObj Edit(@RequestBody MenuDto dto,HttpServletRequest request){
+    	ResultObj res = new ResultObj();
+    	try{
+    		if(_service.InsertUpdate(dto,null))
+    			res.setResult("Success");
+    		else{
+    			res.setResult("Faild");
+    			res.setMessage("no data to edit");
+    		}
+    	}
+    	catch(Exception ex)
+    	{
+    		ex.printStackTrace();
+    		res.setResult("Faild");
+    		res.setMessage(ex.getMessage());
+    	}
+    	return res;
+    }
+    @RequestMapping(value="/{id}", method = RequestMethod.DELETE)
+    public ResultObj Delete(@PathVariable("id") String id){
     	ResultObj res = new ResultObj();
     	try{
     		_service.Delete(id);
@@ -105,8 +126,8 @@ public class MenuController extends ControllerBase {
     	return res;
     }
     
-    @RequestMapping(value="/DeleteMuti", method = RequestMethod.POST)
-    public ResultObj DeleteBatch(String ids){
+    @RequestMapping(value="/DeleteMuti/{ids}", method = RequestMethod.DELETE)
+    public ResultObj DeleteBatch(@PathVariable("ids") String ids){
     	ResultObj res = new ResultObj();
     	try{
     		List<String> uids = GetList(ids,",");

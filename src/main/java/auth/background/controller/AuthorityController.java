@@ -15,20 +15,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import auth.background.dto.BatchUserRoleModel;
 import auth.background.dto.DepartmentDto;
+import auth.background.dto.MenuDto;
 import auth.background.dto.PagedObj;
 import auth.background.dto.ResetPasswordModel;
 import auth.background.dto.ResultObj;
 import auth.background.dto.RoleDto;
+import auth.background.dto.RoleMenuDto;
 import auth.background.dto.TreeCheckBoxModel;
 import auth.background.dto.TreeModel;
 import auth.background.dto.UserDto;
+import auth.background.dto.UserRoleDto;
 import auth.background.dto.UserRoleModel;
 import auth.background.service.DepartmentAppService;
 import auth.background.service.RoleAppService;
 import auth.background.service.UserAppService;
 
 @RestController
-@RequestMapping("/User")
+@RequestMapping("/Authority")
 public class AuthorityController extends ControllerBase {
     @Resource
     private UserAppService _service;
@@ -52,7 +55,29 @@ public class AuthorityController extends ControllerBase {
         return  treeModels;
     }
     
-    
+    @RequestMapping("/GetRoleTreeData/{id}")
+    public List<TreeCheckBoxModel> GetRoleTreeData(@PathVariable("id") String id)
+    {
+    	List<RoleDto> dtos = _roleService.GetAllList();
+    	List<UserRoleDto> rdtos = _service.GetUserRoles(id);
+        List<TreeCheckBoxModel> treeModels = new ArrayList<TreeCheckBoxModel>();
+        for (RoleDto dto : dtos)
+        {
+        	String checked="0";
+        	for(UserRoleDto rdto : rdtos){
+        		if(dto.getId().equals(rdto.getRoleId() )){
+        			checked = "1";
+        		}
+        	}
+        	TreeCheckBoxModel item = new TreeCheckBoxModel();
+        	item.setId(dto.getId());
+        	item.setText(dto.getName());
+        	item.setParent("#");
+        	item.setChecked(checked);
+            treeModels.add(item);
+        }
+        return  treeModels;
+    }
     @RequestMapping(value="/Batch", method = RequestMethod.PUT)
     @ResponseBody
     public ResultObj BatchUserRole(@RequestBody BatchUserRoleModel rpm){
