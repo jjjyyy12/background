@@ -35,10 +35,10 @@ public class MenuDto {
 	public void setUrl(String url) {
 		Url = url;
 	}
-	public int getCreateTime() {
+	public int getType() {
 		return Type;
 	}
-	public void setCreateTime(int type) {
+	public void setType(int type) {
 		Type = type;
 	}
 	public String getRemarks() {

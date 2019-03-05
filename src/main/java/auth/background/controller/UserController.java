@@ -23,7 +23,7 @@ import auth.background.dto.UserDto;
 import auth.background.dto.UserRoleModel;
 import auth.background.service.DepartmentAppService;
 import auth.background.service.UserAppService;
-
+import org.springframework.cache.annotation.Cacheable;
 @RestController
 @RequestMapping("/User")
 public class UserController extends ControllerBase {
@@ -31,22 +31,22 @@ public class UserController extends ControllerBase {
     private UserAppService _service;
     @Resource
     private DepartmentAppService _departmentService;
-    
-    @RequestMapping("/GetTreeData")
-    public List<TreeModel> GetTreeData()
-    {
-    	List<DepartmentDto> dtos = _departmentService.GetAllList();
-        List<TreeModel> treeModels = new ArrayList<TreeModel>();
-        for (DepartmentDto dto : dtos)
-        {
-        	TreeModel item = new TreeModel();
-        	item.setId(dto.getId());
-        	item.setText(dto.getName());
-        	item.setParent(dto.getParentid().length() == 0 ? "#" : dto.getParentid() );
-            treeModels.add(item);
-        }
-        return  treeModels;
-    }
+
+	@RequestMapping("/GetTreeData")
+	public List<TreeModel> GetTreeData()
+	{
+		List<DepartmentDto> dtos = _departmentService.GetAllList();
+		List<TreeModel> treeModels = new ArrayList<TreeModel>();
+		for (DepartmentDto dto : dtos)
+		{
+			TreeModel item = new TreeModel();
+			item.setId(dto.getId());
+			item.setText(dto.getName());
+			item.setParent(dto.getParentid().length() == 0 ? "#" : dto.getParentid() );
+			treeModels.add(item);
+		}
+		return  treeModels;
+	}
     
     @RequestMapping("/{id}")
     public UserDto Get(@PathVariable("id") String id)
@@ -55,6 +55,7 @@ public class UserController extends ControllerBase {
     }
     
     @RequestMapping("/GetChildrenByParent/{departmentId}")
+	@Cacheable(cacheNames = "UserGetChildrenByParent", key = "'UserGetChildrenByParent:departmentId'+#departmentId+',startPage:'+#startPage", unless = "#result==null")
     public PagedObj GetChildrenByParent(@PathVariable("departmentId") String departmentId,@RequestParam("startPage") int startPage,@RequestParam("pageSize") int pageSize){
     	 int rowCount = _service.GetChildrenByDepartmentCount(departmentId);
          List<UserDto> result = _service.GetChildrenByDepartment(departmentId, startPage, pageSize, rowCount);

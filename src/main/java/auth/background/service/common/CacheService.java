@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Tuple;
 
 import com.alibaba.fastjson.JSON;
-import auth.background.config.RedisTemplate;
+import auth.background.config.RedisTemplateSelf;
 import auth.background.service.runnable.RunnableCacheCount;
 import auth.background.service.runnable.RunnableCacheList;
 import auth.background.service.runnable.RunnableCacheSignel;
@@ -23,7 +23,7 @@ import auth.background.util.BeanMapper;
 @Service
 public class CacheService<T> {
 	@Resource
-    private RedisTemplate myRedisTemplate;
+    private RedisTemplateSelf myRedisTemplate;
 	@Resource
     private BeanMapper dzmapper;
   

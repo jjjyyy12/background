@@ -16,7 +16,7 @@ public class DateTimeToStringDozerConverter extends DozerConverter<Date, String>
 
 	@Override
 	public String convertTo(Date source, String destination) {
-		  DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
+		  DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		  if(source==null)return"0001-01-01 00:00:00";
 		  return sdf.format(source);//.replace(" ", "T");
 	}
@@ -24,7 +24,7 @@ public class DateTimeToStringDozerConverter extends DozerConverter<Date, String>
 	@Override
 	public Date convertFrom(String source, Date destination) {
 		if(source==null) return new Date();
-		  DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
+		  DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		  Date dt=null;
 		  try {
 			 dt = sdf.parse(source);

@@ -87,7 +87,7 @@ public class BackgroundConfig implements ResourceLoaderAware, EnvironmentAware{
 	    @Bean  
 	    public ConnectionFactory connectionFactory() {  
 	        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();  
-	        connectionFactory.setAddresses("192.168.1.115:5672,192.168.1.116:5672");  
+	        connectionFactory.setAddresses("192.168.136.112:5672,192.168.136.113:5672");
 	        connectionFactory.setUsername("clare");  
 	        connectionFactory.setPassword("clare");  
 	        connectionFactory.setVirtualHost("/");  
@@ -97,8 +97,8 @@ public class BackgroundConfig implements ResourceLoaderAware, EnvironmentAware{
 	    
 	    @Bean  
 	    //必须是prototype类型  
-	    public RabbitTemplate rabbitTemplate() {  
-	        RabbitTemplate template = new RabbitTemplate(connectionFactory());  
+	    public RabbitTemplate rabbitTemplate() {
+	        RabbitTemplate template = new RabbitTemplate(connectionFactory());
 	        return template;  
 	    }  
 	    
@@ -236,9 +236,9 @@ public class BackgroundConfig implements ResourceLoaderAware, EnvironmentAware{
 	           // 添加redis集群的节点
 	           Set<RedisNode> clusterNodes = new HashSet<RedisNode>();
 	           // 这三个主节点是我本机的IP和端口,从节点没有加入 ，这里不是我真实的IP，虽然是内网，还是不要太直接了
-	           clusterNodes.add(new RedisNode("172.16.32.139", 7000));
-	           clusterNodes.add(new RedisNode("172.16.32.139", 7001));
-	           clusterNodes.add(new RedisNode("172.16.32.139", 7002));
+	           clusterNodes.add(new RedisNode("192.168.136.111", 7000));
+	           clusterNodes.add(new RedisNode("192.168.136.111", 7001));
+	           clusterNodes.add(new RedisNode("192.168.136.111", 7002));
 	           return clusterNodes;
 	       }
 	      
@@ -288,10 +288,10 @@ public class BackgroundConfig implements ResourceLoaderAware, EnvironmentAware{
 	        //Resource resource = loader.getResource("db.properties");
 	        //String url = environment.getProperty("url");
 	         
-	        dataSource.setDriverClassName(environment.resolvePlaceholders("${db.driver}"));//"com.mysql.jdbc.Driver"
-	        dataSource.setUrl(environment.resolvePlaceholders("${db.url}"));//"jdbc:mysql://172.16.32.167:3306/Auth?characterEncoding=utf8&useSSL=false"
-	        dataSource.setUsername(environment.resolvePlaceholders("${db.username}"));//"root"
-	        dataSource.setPassword(environment.resolvePlaceholders("${db.password}"));//"123456Jy."
+	        dataSource.setDriverClassName(environment.resolvePlaceholders("com.mysql.jdbc.Driver"));//${db.driver}
+	        dataSource.setUrl(environment.resolvePlaceholders("jdbc:mysql://192.168.136.112:3306/Auth?characterEncoding=utf8&useSSL=false"));//"${db.url}""jdbc:mysql://172.16.32.167:3306/Auth?characterEncoding=utf8&useSSL=false"
+	        dataSource.setUsername(environment.resolvePlaceholders("root"));//""${db.username}"
+	        dataSource.setPassword(environment.resolvePlaceholders("123456Jy."));//"${db.password}"
 	        
 	        return dataSource;
 	    }
