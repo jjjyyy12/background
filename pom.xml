@@ -5,7 +5,14 @@
   <groupId>auth</groupId>
   <artifactId>background</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+    <modules>
+        <module>consumers</module>
+        <module>domain</module>
+        <module>repositories</module>
+        <module>application</module>
+        <module>utils</module>
+    </modules>
+    <packaging>pom</packaging>
 
   <name>background</name>
   <url>http://maven.apache.org</url>
@@ -132,5 +139,12 @@
 		<artifactId>commons-lang3</artifactId>
 		<version>3.1</version>
 	</dependency>
+
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>19.0</version>
+      </dependency>
+
   </dependencies>
 </project>
