@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import auth.background.dto.DepartmentDto;
+
 import auth.background.dto.MenuDto;
 import auth.background.dto.PagedObj;
 import auth.background.dto.ResultObj;
@@ -21,8 +21,6 @@ import auth.background.dto.RoleDto;
 import auth.background.dto.RoleMenuDto;
 import auth.background.dto.RoleMenuModel;
 import auth.background.dto.TreeCheckBoxModel;
-import auth.background.dto.TreeModel;
-import auth.background.service.DepartmentAppService;
 import auth.background.service.MenuAppService;
 import auth.background.service.RoleAppService;
 

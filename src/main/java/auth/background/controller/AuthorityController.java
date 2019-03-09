@@ -14,19 +14,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import auth.background.dto.BatchUserRoleModel;
-import auth.background.dto.DepartmentDto;
-import auth.background.dto.MenuDto;
-import auth.background.dto.PagedObj;
-import auth.background.dto.ResetPasswordModel;
 import auth.background.dto.ResultObj;
 import auth.background.dto.RoleDto;
-import auth.background.dto.RoleMenuDto;
 import auth.background.dto.TreeCheckBoxModel;
-import auth.background.dto.TreeModel;
-import auth.background.dto.UserDto;
 import auth.background.dto.UserRoleDto;
 import auth.background.dto.UserRoleModel;
-import auth.background.service.DepartmentAppService;
 import auth.background.service.RoleAppService;
 import auth.background.service.UserAppService;
 
