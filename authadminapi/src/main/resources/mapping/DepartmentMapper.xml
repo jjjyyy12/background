@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="auth.background.repositories.dao.DepartmentMapper" >
+  <resultMap id="BaseResultMap" type="auth.background.domain.bean.Department" >
+    <id column="Id" property="id" jdbcType="VARCHAR" />
+    <result column="Code" property="code" jdbcType="VARCHAR" />
+    <result column="ContactNumber" property="contactnumber" jdbcType="VARCHAR" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="CreateUserId" property="createuserid" jdbcType="VARCHAR" />
+    <result column="IsDeleted" property="isdeleted" jdbcType="INTEGER" />
+    <result column="Manager" property="manager" jdbcType="VARCHAR" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="ParentId" property="parentid" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="auth.background.domain.bean.Department" extends="BaseResultMap" >
+    <result column="Remarks" property="remarks" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    Id, Code, ContactNumber, CreateTime, CreateUserId, IsDeleted, Manager, Name, ParentId
+  </sql>
+  <sql id="Blob_Column_List" >
+    Remarks
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from Departments
+    where Id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="GetAllList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Departments
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from Departments
+    where Id = #{id,jdbcType=VARCHAR}
+  </delete>
+   <delete id="deleteBatchByPrimaryKey" >
+        delete from Departments where id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+ </delete>
+  <insert id="insert" parameterType="auth.background.domain.bean.Department" >
+    insert into Departments (Id, Code, ContactNumber, 
+      CreateTime, CreateUserId, IsDeleted, 
+      Manager, Name, ParentId, 
+      Remarks)
+    values (#{id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{contactnumber,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{createuserid,jdbcType=VARCHAR}, #{isdeleted,jdbcType=INTEGER}, 
+      #{manager,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{parentid,jdbcType=VARCHAR}, 
+      #{remarks,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="auth.background.domain.bean.Department" >
+    insert into Departments
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        Id,
+      </if>
+      <if test="code != null" >
+        Code,
+      </if>
+      <if test="contactnumber != null" >
+        ContactNumber,
+      </if>
+      <if test="createtime != null" >
+        CreateTime,
+      </if>
+      <if test="createuserid != null" >
+        CreateUserId,
+      </if>
+      <if test="isdeleted != null" >
+        IsDeleted,
+      </if>
+      <if test="manager != null" >
+        Manager,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="parentid != null" >
+        ParentId,
+      </if>
+      <if test="remarks != null" >
+        Remarks,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="contactnumber != null" >
+        #{contactnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuserid != null" >
+        #{createuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="isdeleted != null" >
+        #{isdeleted,jdbcType=INTEGER},
+      </if>
+      <if test="manager != null" >
+        #{manager,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="auth.background.domain.bean.Department" >
+    update Departments
+    <set >
+      <if test="code != null" >
+        Code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="contactnumber != null" >
+        ContactNumber = #{contactnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuserid != null" >
+        CreateUserId = #{createuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="isdeleted != null" >
+        IsDeleted = #{isdeleted,jdbcType=INTEGER},
+      </if>
+      <if test="manager != null" >
+        Manager = #{manager,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        Name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        ParentId = #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        Remarks = #{remarks,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="auth.background.domain.bean.Department" >
+    update Departments
+    set Code = #{code,jdbcType=VARCHAR},
+      ContactNumber = #{contactnumber,jdbcType=VARCHAR},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      CreateUserId = #{createuserid,jdbcType=VARCHAR},
+      IsDeleted = #{isdeleted,jdbcType=INTEGER},
+      Manager = #{manager,jdbcType=VARCHAR},
+      Name = #{name,jdbcType=VARCHAR},
+      ParentId = #{parentid,jdbcType=VARCHAR},
+      Remarks = #{remarks,jdbcType=LONGVARCHAR}
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="auth.background.domain.bean.Department" >
+    update Departments
+    set Code = #{code,jdbcType=VARCHAR},
+      ContactNumber = #{contactnumber,jdbcType=VARCHAR},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      CreateUserId = #{createuserid,jdbcType=VARCHAR},
+      IsDeleted = #{isdeleted,jdbcType=INTEGER},
+      Manager = #{manager,jdbcType=VARCHAR},
+      Name = #{name,jdbcType=VARCHAR},
+      ParentId = #{parentid,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

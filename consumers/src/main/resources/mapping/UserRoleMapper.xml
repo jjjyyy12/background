@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="auth.background.domain.bean.UserRoleMapper" >
+  <resultMap id="BaseResultMap" type="auth.background.domain.bean.UserRoleKey" >
+    <id column="UserId" property="userid" jdbcType="VARCHAR" />
+    <id column="RoleId" property="roleid" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="auth.background.domain.bean.UserRoleKey" >
+    delete from UserRoles
+    where UserId = #{userid,jdbcType=VARCHAR}
+      and RoleId = #{roleid,jdbcType=VARCHAR}
+  </delete>
+   <delete id="BatchDeleteUserRoles">
+        delete from UserRoles where UserId in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+ </delete>
+  <insert id="insert" parameterType="auth.background.domain.bean.UserRoleKey" >
+    insert into UserRoles (UserId, RoleId)
+    values (#{userid,jdbcType=VARCHAR}, #{roleid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="auth.background.domain.bean.UserRoleKey" >
+    insert into UserRoles
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        UserId,
+      </if>
+      <if test="roleid != null" >
+        RoleId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="roleid != null" >
+        #{roleid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <insert id="addUserRoleBatch" useGeneratedKeys="true" >  
+    insert into UserRoles (UserId, RoleId)   
+    values  
+    <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.UserId},#{item.RoleId})  
+    </foreach>  
+</insert>  
+   <sql id="Base_Column_List" >
+    UserId, RoleId
+   </sql>
+    <select id="GetUserRoles" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from UserRoles 
+    where UserId = #{userId,jdbcType=VARCHAR}
+  </select>
+</mapper>

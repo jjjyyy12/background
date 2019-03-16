@@ -59,6 +59,7 @@ public class MenuAppService {
     	{ 
     		return dzmapper.map(menuDao.selectByPrimaryKey(x), MenuDto.class); 
     	};
+		cacheService.GetClass(new MenuDto());
     	return cacheService.Get(handler, key, id);
     }
 
@@ -70,6 +71,7 @@ public class MenuAppService {
     		List<Menu> llist = menuDao.GetAllList();
     		return dzmapper.mapList(llist,  MenuDto.class); 
     	};
+		cacheService.GetClass(new MenuDto());
     	return cacheService.GetSortList(handler, key, 0, 0,-1);
     }
  

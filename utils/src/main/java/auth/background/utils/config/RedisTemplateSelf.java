@@ -129,14 +129,14 @@ public class RedisTemplateSelf {
     }
     public void expire(final String key){
     	LOGGER.debug("RedisUtil:expire cache key={}", key);
-    	jedisCluster.expire(key, 600);
+    	jedisCluster.expire(key, 60);
     }
-    public Set<Tuple> zrevrangeByScoreWithScores(final String key, final double max, final double min){
+    public Set<Tuple> zrangeByScoreWithScores(final String key, final double max, final double min){
     	LOGGER.debug("RedisUtil:zrevrangeByScoreWithScores cache key={}", key);
-    	return jedisCluster.zrevrangeByScoreWithScores(key, max,min);
+    	return jedisCluster.zrangeByScoreWithScores(key, max,min);
     }
-    public Set<Tuple> zrevrangeByScoreWithScores(final String key, final String max, final String min){
+    public Set<Tuple> zrangeByScoreWithScores(final String key, final String max, final String min){
     	LOGGER.debug("RedisUtil:zrevrangeByScoreWithScores cache key={}", key);
-    	return jedisCluster.zrevrangeByScoreWithScores(key, max,min);
+    	return jedisCluster.zrangeByScoreWithScores(key, max,min);
     }
 }

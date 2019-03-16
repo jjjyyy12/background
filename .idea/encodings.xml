@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/application" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/authadminapi" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/consumers" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/domain" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/repositories" charset="UTF-8" />

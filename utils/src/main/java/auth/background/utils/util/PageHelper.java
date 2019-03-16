@@ -10,6 +10,10 @@ public class PageHelper<T> {
     	int end = count < pageSize*startPage ? count : ((startPage - 1) * pageSize + pageSize);
      	if(beg>count) beg = count;
     	if(beg>end) end = beg;
-    	return rlist.subList(beg==0?0:beg-1,end-1);
+    	beg--;
+    	end--;
+    	if(beg<0) beg = 0;
+    	if(end<1) end = 1;
+    	return rlist.subList(beg,end);
 	}
 }

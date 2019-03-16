@@ -67,9 +67,12 @@ public class UserAppService {
     	if(id==null||id.length()<=0) return null;
     	String key = RedisConstants._instance+RedisConstants.UserKey+id;
     	RunnableCacheSignel<UserDto,String> handler = (x) -> 
-    	{ 
-    		return dzmapper.map(userDao.selectByPrimaryKey(x), UserDto.class); 
+    	{
+			User t = userDao.selectByPrimaryKey(x);
+			if (t==null) return null;
+    		return dzmapper.map(userDao.selectByPrimaryKey(x), UserDto.class);
     	};
+		cacheService.GetClass(new UserDto());
     	return cacheService.Get(handler, key, id);
     }
     //得到所有
@@ -79,6 +82,7 @@ public class UserAppService {
     	{ 
     		return dzmapper.mapList(userDao.GetAllList(),  UserDto.class); 
     	};
+    	cacheService.GetClass(new UserDto());
     	return cacheService.GetSortList(handler, okey,0, 0,-1);
     }
     //取部门人数
@@ -99,6 +103,7 @@ public class UserAppService {
     		List<User> llist = userDao.GetChildrenByDepartment(departmentid);
     		return dzmapper.mapList(llist,  UserDto.class); 
     	};
+		cacheService.GetClass(new UserDto());
     	List<UserDto> dlist =cacheService.GetSortList(handler, okey, startPage,pageSize,count);
     	PageHelper<UserDto> ph= new PageHelper<UserDto>();
     	return ph.paged(dlist, startPage, pageSize, count);
@@ -107,6 +112,7 @@ public class UserAppService {
     public List<UserRoleDto> GetUserRoles(String userId){
     	String okey=RedisConstants._instance+RedisConstants.UserRoleKey+userId;
     	RunnableCacheList<UserRoleDto> handler = () -> { return dzmapper.mapList(userRoleDao.GetUserRoles(userId), UserRoleDto.class); };
+		cacheService2.GetClass(new UserRoleDto());
     	return cacheService2.GetSortList(handler, okey, 0, 0,-1);
     }
     

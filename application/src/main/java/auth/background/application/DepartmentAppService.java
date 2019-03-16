@@ -47,6 +47,7 @@ public class DepartmentAppService {
     	{ 
     		return dzmapper.map(departmentDao.selectByPrimaryKey(x), DepartmentDto.class); 
     	};
+		cacheService.GetClass(new DepartmentDto());
     	return cacheService.Get(handler, key, id);
     }
 
@@ -58,6 +59,7 @@ public class DepartmentAppService {
     		List<Department> llist = departmentDao.GetAllList();
     		return dzmapper.mapList(llist,  DepartmentDto.class); 
     	};
+		cacheService.GetClass(new DepartmentDto());
     	return cacheService.GetSortList(handler, key, 0, 0,-1);
     }
  

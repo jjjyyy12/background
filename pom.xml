@@ -11,6 +11,7 @@
         <module>repositories</module>
         <module>application</module>
         <module>utils</module>
+        <module>authadminapi</module>
     </modules>
     <packaging>pom</packaging>
 

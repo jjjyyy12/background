@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/application/application.iml" filepath="$PROJECT_DIR$/application/application.iml" />
+      <module fileurl="file://$PROJECT_DIR$/authadminapi/authadminapi.iml" filepath="$PROJECT_DIR$/authadminapi/authadminapi.iml" />
       <module fileurl="file://$PROJECT_DIR$/background.iml" filepath="$PROJECT_DIR$/background.iml" />
       <module fileurl="file://$PROJECT_DIR$/consumers/consumers.iml" filepath="$PROJECT_DIR$/consumers/consumers.iml" />
       <module fileurl="file://$PROJECT_DIR$/domain/domain.iml" filepath="$PROJECT_DIR$/domain/domain.iml" />

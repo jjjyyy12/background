@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="auth.background.repositories.dao.MenuMapper" >
+  <resultMap id="BaseResultMap" type="auth.background.domain.bean.Menu" >
+    <id column="Id" property="id" jdbcType="VARCHAR" />
+    <result column="Code" property="code" jdbcType="VARCHAR" />
+    <result column="Icon" property="icon" jdbcType="VARCHAR" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="ParentId" property="parentid" jdbcType="VARCHAR" />
+    <result column="Remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="SerialNumber" property="serialnumber" jdbcType="INTEGER" />
+    <result column="Type" property="type" jdbcType="INTEGER" />
+    <result column="Url" property="url" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    Id, Code, Icon, Name, ParentId, Remarks, SerialNumber, Type, Url
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from Menus
+    where Id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="GetAllList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Menus
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from Menus
+    where Id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteBatchByPrimaryKey" >
+        delete from Menus where id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+ </delete>
+  <insert id="insert" parameterType="auth.background.domain.bean.Menu" >
+    insert into Menus (Id, Code, Icon, 
+      Name, ParentId, Remarks, 
+      SerialNumber, Type, Url
+      )
+    values (#{id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{parentid,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, 
+      #{serialnumber,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="auth.background.domain.bean.Menu" >
+    insert into Menus
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        Id,
+      </if>
+      <if test="code != null" >
+        Code,
+      </if>
+      <if test="icon != null" >
+        Icon,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="parentid != null" >
+        ParentId,
+      </if>
+      <if test="remarks != null" >
+        Remarks,
+      </if>
+      <if test="serialnumber != null" >
+        SerialNumber,
+      </if>
+      <if test="type != null" >
+        Type,
+      </if>
+      <if test="url != null" >
+        Url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="serialnumber != null" >
+        #{serialnumber,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="auth.background.domain.bean.Menu" >
+    update Menus
+    <set >
+      <if test="code != null" >
+        Code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        Icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        Name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        ParentId = #{parentid,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        Remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="serialnumber != null" >
+        SerialNumber = #{serialnumber,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        Type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        Url = #{url,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="auth.background.domain.bean.Menu" >
+    update Menus
+    set Code = #{code,jdbcType=VARCHAR},
+      Icon = #{icon,jdbcType=VARCHAR},
+      Name = #{name,jdbcType=VARCHAR},
+      ParentId = #{parentid,jdbcType=VARCHAR},
+      Remarks = #{remarks,jdbcType=VARCHAR},
+      SerialNumber = #{serialnumber,jdbcType=INTEGER},
+      Type = #{type,jdbcType=INTEGER},
+      Url = #{url,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

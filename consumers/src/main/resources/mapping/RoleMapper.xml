@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="auth.background.repositories.dao.RoleMapper" >
+ <cache eviction="LRU" flushInterval="1000" size="1024" readOnly="true"/>
+  <resultMap id="BaseResultMap" type="auth.background.domain.bean.Role" >
+    <id column="Id" property="id" jdbcType="VARCHAR" />
+    <result column="Code" property="code" jdbcType="VARCHAR" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="CreateUserId" property="createuserid" jdbcType="VARCHAR" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="Remarks" property="remarks" jdbcType="VARCHAR" />
+     <association property="createuser" column="createuserid" select="auth.background.repositories.dao.UserMapper.selectByPrimaryKey" fetchType="eager"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    Id, Code, CreateTime, CreateUserId, Name, Remarks
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from Roles
+    where Id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="GetAllList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Roles
+  </select>
+  <select id="GetAllListCount" resultType="Integer">
+    select 
+    count(1)
+    from Roles
+  </select>
+    <select id="GetListByIds" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Roles 
+    where Id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from Roles
+    where Id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <delete id="deleteBatchByPrimaryKey" >
+        delete from Roles where id in (
+        <foreach collection="list" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+ </delete>
+  <insert id="insert" parameterType="auth.background.domain.bean.Role" >
+    insert into Roles (Id, Code, CreateTime, 
+      CreateUserId, Name, Remarks
+      )
+    values (#{id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{createuserid,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="auth.background.domain.bean.Role" >
+    insert into Roles
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        Id,
+      </if>
+      <if test="code != null" >
+        Code,
+      </if>
+      <if test="createtime != null" >
+        CreateTime,
+      </if>
+      <if test="createuserid != null" >
+        CreateUserId,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="remarks != null" >
+        Remarks,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuserid != null" >
+        #{createuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="auth.background.domain.bean.Role" >
+    update Roles
+    <set >
+      <if test="code != null" >
+        Code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuserid != null" >
+        CreateUserId = #{createuserid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        Name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        Remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="auth.background.domain.bean.Role" >
+    update Roles
+    set Code = #{code,jdbcType=VARCHAR},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      CreateUserId = #{createuserid,jdbcType=VARCHAR},
+      Name = #{name,jdbcType=VARCHAR},
+      Remarks = #{remarks,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.TypeReference;
 import org.springframework.stereotype.Service;
 
 import redis.clients.jedis.Tuple;
@@ -19,19 +20,26 @@ import auth.background.application.runnable.RunnableCacheList;
 import auth.background.application.runnable.RunnableCacheSignel;
 import auth.background.application.runnable.RunnableCompare;
 import auth.background.utils.util.BeanMapper;
-
+import java.lang.reflect.ParameterizedType;
 @Service
 public class CacheService<T> {
 	@Resource
     private RedisTemplateSelf myRedisTemplate;
 	@Resource
     private BeanMapper dzmapper;
-  
+	Class<? super T> rawType;
     Class<T> clazz;
     @SuppressWarnings("unchecked")
-	public void GetClass( T t) { 
-    	this.clazz = (Class<T>) t.getClass(); 
-    } 
+	public void GetClass( T t) {
+    	if(this.clazz == null)
+    		this.clazz = (Class<T>) t.getClass();
+    }
+	public void GetClass2() {
+    	if(rawType == null){
+            Class <?> cla = getClass();
+            rawType = (Class <T>) ( cla.getGenericSuperclass());
+        }
+	}
 
     //包装chche的getlist方法，先取缓存再取db
 	@SuppressWarnings("unchecked")
@@ -40,27 +48,34 @@ public class CacheService<T> {
 		int max= startPage*pageSize;
 		if(max>=count) max=count;
 		if(startPage==0) max=-1;
-    	Set<String> zlist = null;
+//    	Set<String> zlist = null;
+		Set<Tuple> zzlist = null;
     	if(count>-1)
-    		zlist = myRedisTemplate.zrangeByScore(key,startPage,max);
-    	else 
-    		zlist = myRedisTemplate.zrangeByScoreString(key, "-inf", "+inf");
-    	if(zlist.isEmpty()){
+			zzlist = myRedisTemplate.zrangeByScoreWithScores(key,startPage,max);
+    	else
+			zzlist = myRedisTemplate.zrangeByScoreWithScores(key, "-inf", "+inf");
+    	if(zzlist.isEmpty()){
     		dlist = handler.getList();	 
         	if(!dlist.isEmpty()){
             	Map<String, Double> scoreMembers = new HashMap<String, Double>();
+				String t = "";
           	  	for(int i=0, j=dlist.size();i<j;i++){
-          	  		scoreMembers.put(JSON.toJSONString(dlist.get(i)),  (double)i+1);
+          	  		t = JSON.toJSONString(dlist.get(i));
+          	  		scoreMembers.put(t,  (double)i+1);
           	  	}
           	  	myRedisTemplate.zadd(key, scoreMembers); 
-          	  	myRedisTemplate.expire(key);
+          	  	myRedisTemplate.expire(key,60);
         	}
     	}
     	else{
     		dlist = new ArrayList<T>();
-    		for(String dto : zlist){
-    			dlist.add((T) JSON.parseObject(dto));
-    		}
+			for (Tuple tuple : zzlist) {
+				dlist.add((T) JSON.parseObject(tuple.getElement(),this.clazz));
+			}
+//    		dlist = JSON.parseObject(zzlist.toString(),dlist.getClass());
+//    		for(String dto : zlist){
+//    			dlist.add((T) JSON.parseObject(dto,dlist.getClass()));
+//    		}
     	}
 		return dlist;
 	}
@@ -77,7 +92,7 @@ public class CacheService<T> {
 	//更新缓存
 	@SuppressWarnings("unchecked")
 	public boolean SortedSetUpdate(String key,T inobj, RunnableCompare<T> handler,boolean delFlag){
-		Set<Tuple> zlist = myRedisTemplate.zrevrangeByScoreWithScores( key, "+inf","-inf");
+		Set<Tuple> zlist = myRedisTemplate.zrangeByScoreWithScores( key, "+inf","-inf");
 		boolean isNew = true;
 		for(Tuple zitem : zlist)
         {

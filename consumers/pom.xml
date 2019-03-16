@@ -22,6 +22,26 @@
 
     <dependencies>
         <dependency>
+            <groupId>auth</groupId>
+            <artifactId>domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>auth</groupId>
+            <artifactId>repositories</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>auth</groupId>
+            <artifactId>utils</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>auth</groupId>
+            <artifactId>application</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>

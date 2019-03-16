@@ -62,6 +62,7 @@ public class RoleAppService {
     	{ 
     		return dzmapper.map(roleDao.selectByPrimaryKey(x), RoleDto.class); 
     	};
+        cacheService.GetClass(new RoleDto());
     	return cacheService.Get(handler, key, id);
     }
 
@@ -206,6 +207,7 @@ public class RoleAppService {
     	{ 
     		return dzmapper.mapList(roleMenuDao.GetRoleMenus(x), RoleMenuDto.class); 
     	};
+        cacheService2.GetClass(new ArrayList<RoleMenuDto>());
     	return cacheService2.Get(handler, tkey, Id);
     }
     //更新role的menus
