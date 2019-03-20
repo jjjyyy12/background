@@ -31,7 +31,6 @@ public class CacheService<T> {
     Class<T> clazz;
     @SuppressWarnings("unchecked")
 	public void GetClass( T t) {
-    	if(this.clazz == null)
     		this.clazz = (Class<T>) t.getClass();
     }
 	public void GetClass2() {

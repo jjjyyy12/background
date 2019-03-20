@@ -33,7 +33,8 @@ public class QueueSerivce<T> {
 	public void Request(T dto, MessageBase msg, MessageBase replyMsg, RunnableQueueSucc<T,MessageBase>  succHandle, int runcnt) throws InterruptedException{
 		try
         {
-			MessageBase reply = (MessageBase)amqpTemplate.convertSendAndReceive(QueueSerivce.exchangeName, msg.getMessageRouter(), msg);
+        	String router = msg.getMessageRouter();
+			MessageBase reply = (MessageBase)amqpTemplate.convertSendAndReceive(QueueSerivce.exchangeName, router, msg);
 			replyMsg=reply;
             if (replyMsg.getMessageBodyReturnByte() != null)
             {
